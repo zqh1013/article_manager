@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 - 文章管理器</title>
+  <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    body { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+<div class="bg-white p-8 md:p-12 rounded-xl shadow-2xl w-full max-w-md">
+  <div class="text-center mb-8">
+    <i class="fas fa-book-open text-indigo-600 text-5xl"></i>
+    <h1 class="text-3xl font-bold text-gray-800 mt-4">文章管理器</h1>
+    <p class="text-gray-600 mt-2">欢迎回来，请登录您的账户。</p>
+  </div>
+  <form id="loginForm" class="space-y-6">
+    <div>
+      <label for="email" class="block text-sm font-medium text-gray-700 mb-1">邮箱地址</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-envelope text-gray-400"></i>
+        </div>
+        <input type="email" id="email" name="email" required placeholder="you@example.com"
+               class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      </div>
+    </div>
+    <div>
+      <label for="password" class="block text-sm font-medium text-gray-700 mb-1">密码</label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-lock text-gray-400"></i>
+        </div>
+        <input type="password" id="password" name="password" required placeholder="••••••••"
+               class="w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      </div>
+    </div>
+    <div class="flex items-center justify-between">
+      <div class="flex items-center">
+        <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+        <label for="remember-me" class="ml-2 block text-sm text-gray-900">记住我</label>
+      </div>
+      <div class="text-sm">
+        <a href="reset_password.html" class="font-medium text-indigo-600 hover:text-indigo-500">忘记密码?</a>
+      </div>
+    </div>
+    <div>
+      <button type="submit"
+              class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <i class="fas fa-sign-in-alt mr-2"></i> 登 录
+      </button>
+    </div>
+  </form>
+  <p class="mt-8 text-center text-sm text-gray-600">
+    还没有账户?
+    <a href="register.html" class="font-medium text-indigo-600 hover:text-indigo-500">立即注册</a>
+  </p>
+</div>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      email: document.querySelector('input[name="email"]').value.trim(),
+      password: document.querySelector('input[name="password"]').value
+    };
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        window.location.href = 'dashboard.html';
+      } else {
+        alert(data.message)
+      }
+  });
+</script>
+</body>
+</html>
