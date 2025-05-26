@@ -23,15 +23,6 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
         }
-        .category-item .sub-category {
-            display: none; /* Hidden by default */
-        }
-        .category-item.open .sub-category {
-            display: block;
-        }
-        .category-item.open .fa-chevron-down {
-            transform: rotate(180deg);
-        }
         .dropdown-menu {
             display: none;
             position: absolute;
@@ -44,6 +35,19 @@
         .user-menu-button:focus + .dropdown-menu, .dropdown-menu:hover {
             display: block;
         }
+
+        /* 分类编辑样式开始 */
+        .category-item .sub-category { display: none; }
+        .category-item.open > .sub-category {
+            display: block;
+        }
+        .category-item[data-id] .arrow-icon.rotated {
+            transform: rotate(180deg);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .show { display: block; }
+        .fade-in { animation: fadeIn 0.3s; }
+        /* 分类编辑样式结束 */
     </style>
 </head>
 <body class="min-h-screen">
@@ -136,52 +140,14 @@
             </a>
         </div>
         <div>
+            <!-- 动态分类树 -->
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">我的分类</h3>
                 <button onclick="openCategoryModal()" class="text-xs text-indigo-600 hover:text-indigo-800 font-medium">
                     <i class="fas fa-edit mr-1"></i>管理
                 </button>
             </div>
-            <div class="space-y-1" id="categoryList">
-                <!-- Category items will be injected here by JS or hardcoded -->
-                <div class="category-item group" data-id="cat1">
-                    <div class="px-3 py-2 rounded-md cursor-pointer flex items-center justify-between hover:bg-gray-100" onclick="toggleCategory('cat1')">
-                        <div class="flex items-center text-sm">
-                            <i class="fas fa-folder text-yellow-500 mr-3"></i>
-                            <span>工作文档</span> <span class="text-xs text-gray-400 ml-1">(5)</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-gray-400 text-xs group-hover:text-gray-600 transition-transform"></i>
-                    </div>
-                    <div class="sub-category ml-4 mt-1 space-y-1">
-                        <a href="#" class="block px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md">项目A (2)</a>
-                        <div class="category-item group" data-id="cat1-sub1">
-                            <div class="px-3 py-1.5 rounded-md cursor-pointer flex items-center justify-between hover:bg-gray-100" onclick="toggleCategory('cat1-sub1'); event.stopPropagation();">
-                                <div class="flex items-center text-sm">
-                                    <i class="fas fa-folder-open text-yellow-400 mr-2 ml-1"></i>
-                                    <span>季度报告</span> <span class="text-xs text-gray-400 ml-1">(3)</span>
-                                </div>
-                                <i class="fas fa-chevron-down text-gray-400 text-xs group-hover:text-gray-600 transition-transform"></i>
-                            </div>
-                            <div class="sub-category ml-4 mt-1 space-y-1">
-                                <a href="#" class="block px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md">Q1 Report (1)</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="category-item group" data-id="cat2">
-                    <div class="px-3 py-2 rounded-md cursor-pointer flex items-center justify-between hover:bg-gray-100" onclick="toggleCategory('cat2')">
-                        <div class="flex items-center text-sm">
-                            <i class="fas fa-folder text-blue-500 mr-3"></i>
-                            <span>学习笔记</span> <span class="text-xs text-gray-400 ml-1">(8)</span>
-                        </div>
-                        <i class="fas fa-chevron-down text-gray-400 text-xs group-hover:text-gray-600 transition-transform"></i>
-                    </div>
-                    <div class="sub-category ml-4 mt-1 space-y-1">
-                        <a href="#" class="block px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md">JavaScript (3)</a>
-                        <a href="#" class="block px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded-md">Python (5)</a>
-                    </div>
-                </div>
-            </div>
+            <div class="space-y-1" id="categoryList"></div>
         </div>
         <div>
             <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">标签</h3>
@@ -316,43 +282,40 @@
     </main>
 </div>
 
-<!-- Category Management Modal -->
+<!-- 分类管理模态框 -->
 <div id="categoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+<!--<div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">-->
+<!--    <div class="bg-white rounded-lg p-6 w-full max-w-md fade-in">-->
     <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-medium text-gray-900">管理分类</h3>
-            <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">
-                <i class="fas fa-times text-xl"></i>
-            </button>
+        <div class="flex justify-between mb-4">
+            <h3 class="text-lg font-semibold">分类管理</h3>
+            <button onclick="closeCategoryModal()" class="text-gray-500 hover:text-gray-700">&times;</button>
         </div>
+
+        <!-- 添加分类表单 -->
         <div class="space-y-4">
             <div>
-                <label for="newCategoryName" class="block text-sm font-medium text-gray-700">新分类名称</label>
-                <input type="text" id="newCategoryName" placeholder="例如：技术/编程/Java" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm py-2">
+                <input type="text" id="categoryName" placeholder="新分类名称"
+                       class="w-full p-2 border rounded focus:ring-2 focus:ring-indigo-500">
             </div>
             <div>
-                <label for="parentCategory" class="block text-sm font-medium text-gray-700">父分类 (可选)</label>
-                <select id="parentCategory" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm py-2">
-                    <option value="">无 (顶级分类)</option>
-                    <option value="cat1">工作文档</option>
-                    <option value="cat1-sub1">  ↳ 季度报告</option>
-                    <option value="cat2">学习笔记</option>
+                <select id="parentCategory" class="w-full p-2 border rounded">
+                    <option value="">无父分类</option>
                 </select>
             </div>
-            <button onclick="addCategory()" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 text-sm font-medium">
-                <i class="fas fa-plus mr-2"></i>添加分类
+            <button onclick="handleAddCategory()"
+                    class="w-full bg-indigo-600 text-white p-2 rounded hover:bg-indigo-700">
+                添加分类
             </button>
-            <hr>
-            <h4 class="text-sm font-medium text-gray-700">现有分类:</h4>
-            <div id="existingCategoriesList" class="max-h-48 overflow-y-auto text-sm space-y-1">
-                <!-- Populated by JS -->
-                <div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded"><span>工作文档</span> <button onclick="alert('编辑分类：工作文档')" class="text-blue-500 hover:text-blue-700 text-xs">编辑</button> <button onclick="alert('删除分类：工作文档')" class="text-red-500 hover:text-red-700 text-xs ml-2">删除</button></div>
-                <div class="flex justify-between items-center p-2 hover:bg-gray-50 rounded ml-4"><span>  ↳ 季度报告</span> <button onclick="alert('编辑分类：季度报告')" class="text-blue-500 hover:text-blue-700 text-xs">编辑</button> <button onclick="alert('删除分类：季度报告')" class="text-red-500 hover:text-red-700 text-xs ml-2">删除</button></div>
+
+            <!-- 分类列表 -->
+            <div class="border-t pt-4">
+                <h4 class="text-sm font-medium mb-2">现有分类：</h4>
+                <div id="categoryManageList" class="space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- 页脚 -->
 <footer class="bg-white border-t border-gray-200 py-6 mt-8">
@@ -420,35 +383,261 @@
     });
 
 
-    // 分类展开/折叠
-    function toggleCategory(categoryId) {
-        const categoryItem = document.querySelector(`.category-item[data-id="${categoryId}"]`);
-        if (categoryItem) {
-            categoryItem.classList.toggle('open');
+    //--------------------------分类编辑---------------------------------------------------------
+    let categories = null;
+    let id_cnt = 0;
+
+    // 渲染分类树
+    function renderCategoryTreeList(containerId, categories, level = 0) {
+        const container = document.getElementById(containerId);
+        return container.innerHTML = categories.map(category => renderCategoryTree(category,level)).join('');
+    }
+    function renderCategoryTree(category, level) {
+        return`
+                <div class="category-item group ${category.isOpen ? 'open' : ''}" data-id="${category.id}">
+                    <div class="flex items-center justify-between p-2 hover:bg-gray-100 rounded cursor-pointer"
+                         onclick="toggleCategory(${category.id})">
+                        <div class="flex items-center">
+                            <i class="fas ${category.children.length ? 'fa-folder-open' : 'fa-folder'}
+                                text-yellow-500 mr-2"></i>
+                            <span>${category.name}</span>
+                            <span class="text-gray-400 text-xs ml-2">(${category.articleCount})</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="openEditModal(${category.id})"
+                                    class="text-blue-500 hover:text-blue-700">
+                                <i class="fas fa-edit text-xs"></i>
+                            </button>
+                            <button onclick="deleteCategory(${category.id})"
+                                    class="text-red-500 hover:text-red-700">
+                                <i class="fas fa-trash text-xs"></i>
+                            </button>
+                            ${category.children.length ?
+            `<i class="arrow-icon ${category.isOpen ? 'rotated' : ''} fas fa-chevron-down text-gray-400 text-xs"></i>` : ''}
+                        </div>
+                    </div>
+                    ${category.isOpen && category.children?.length ? `
+                      <div class="sub-category ml-4">
+                        ${category.children.map(child => renderCategoryTree(child, level + 1)).join('')}
+                      </div>` : ''}
+                </div>
+            `;
+    }
+
+    // 分类操作函数
+    function toggleCategory(id) {
+        const category = findCategory(categories, id);
+        if (category) {
+            category.isOpen = !category.isOpen;
+            renderCategoryTreeList('categoryList', categories);
+
         }
     }
 
-    // 分类管理 Modal
-    const categoryModal = document.getElementById('categoryModal');
+    // 修改分类
+    async function modifyCategory(newCategory) {
+        await fetch('/api/categories/modify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newCategory)
+        });
+        renderCategoryTreeList('categoryList', categories);
+
+    }
+
+    // 删除分类
+    async function deleteCategory(id) {
+        if (!confirm('确定删除此分类及其所有子分类吗？')) return;
+        await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+        await loadCategories();
+    }
+
+    //从数据库中加载分类
+    async function loadCategories() {
+        const response = await fetch('/api/categories');
+        categories = await response.json();
+        renderCategoryTreeList('categoryList', categories);
+    }
+
+    // 保存新创建的分类
+    async function saveCategories(newCategory) {
+        const response = await fetch('/api/categories/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newCategory)
+        });
+        //获得此时的id
+        const data = await response.json();
+        newCategory.id = data.id;
+        renderCategoryTreeList('categoryList', categories);
+
+    }
+
+
+    // 分类管理模态框功能
+    let editingId = null;
+
     function openCategoryModal() {
-        categoryModal.classList.remove('hidden');
-        // Populate existing categories list here in a real app
+        document.getElementById('categoryModal').classList.remove('hidden');
+        renderManageList();
+        populateParentSelect();
     }
+
     function closeCategoryModal() {
-        categoryModal.classList.add('hidden');
+        document.getElementById('categoryModal').classList.add('hidden');
+        editingId = null;
     }
-    function addCategory() {
-        const newCatName = document.getElementById('newCategoryName').value;
-        const parentCat = document.getElementById('parentCategory').value;
-        if (newCatName.trim() === '') {
-            alert('分类名称不能为空！');
-            return;
+
+    async function handleAddCategory() {
+        const nameInput = document.getElementById('categoryName');
+        const parentSelect = document.getElementById('parentCategory');
+        const newName = nameInput.value.trim();
+        const newParentId = parentSelect.value ? Number(parentSelect.value) : null;
+
+        if (editingId) {
+            // ==================== 编辑逻辑 ====================
+            const target = findCategory(categories, editingId);
+
+            // 1. 验证父分类是否合法（不能设置自己为父分类）
+            if (editingId === newParentId) {
+                alert('不能选择自己作为父分类');
+                return;
+            }
+            target.name = newName;
+            target.isOpen = false;
+            const oldParentId = target.parentId;
+            target.parentId = newParentId;
+
+            // 4. 如果修改了父分类，需要移动分类位置
+
+
+            if (oldParentId !== newParentId) {
+
+                // 从原位置移除
+                removeCategoryFromParent(target.id, oldParentId);
+                // 添加到新父分类
+                if (newParentId) {
+                    const newParent = findCategory(categories, newParentId);
+                    newParent.children.push(target);
+
+                } else {
+                    categories.push(target);
+
+                }
+            }
+            await modifyCategory(target);
+        } else {
+            // 添加逻辑
+            const newCategory = {
+                id: null,
+                name: nameInput.value.trim(),
+                parentId: newParentId,
+                articleCount: 0,
+                isOpen: false,
+                children: []
+            };
+
+            if (!newCategory.name) {
+                alert('请输入分类名称');
+                return;
+            }
+            if (newCategory.parentId) {
+                const parent = findCategory(categories, newCategory.parentId);
+                parent?.children.push(newCategory);
+            } else {
+                categories.push(newCategory);
+            }
+            await saveCategories(newCategory);
         }
-        alert(`添加分类：${newCatName}\n父分类ID：${parentCat || '无'}\n(功能模拟)`);
-        // Here you would actually add to list and backend
-        document.getElementById('newCategoryName').value = '';
+        nameInput.value = '';
         closeCategoryModal();
     }
+
+    // 辅助函数：从父分类中移除指定分类
+    function removeCategoryFromParent(categoryId, parentId) {
+        if (parentId) {
+            const parent = findCategory(categories, parentId);
+            parent.children = parent.children.filter(c => c.id !== categoryId);
+        } else {
+            categories = categories.filter(c => c.id !== categoryId);
+        }
+    }
+
+    // 辅助函数
+    function findCategory(list, id) {
+        for (const item of list) {
+            if (item.id === id) return item;
+            if (item.children?.length) {
+                const found = findCategory(item.children, id);
+                if (found) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    // 管理中填充父分类下拉列表
+    function populateParentSelect() {
+        const select = document.getElementById('parentCategory');
+        select.innerHTML = '<option value="">无父分类</option>';
+        const traverse = (list, level = 0) => {
+            list.forEach(cat => {
+                select.innerHTML += `
+                        <option value="${cat.id}">
+                            ${'&nbsp;&nbsp;'.repeat(level)}${cat.name}
+                        </option>
+                    `;
+                if (cat.children?.length) traverse(cat.children, level + 1);
+            });
+        };
+        traverse(categories);
+    }
+
+
+    //显示分类列表，包含编辑和删除按钮
+    function renderManageList() {
+        const container = document.getElementById('categoryManageList');
+        container.innerHTML = categories.map(cat => renderCategoryItem(cat)).join('');
+    }
+
+    function renderCategoryItem(category, level = 0) {
+        return `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span style="padding-left: ${level * 20}px">${category.name}</span>
+                    <div class="space-x-2">
+                        <button onclick="openEditModal(${category.id})"
+                                class="text-blue-500 hover:text-blue-700">
+                            编辑
+                        </button>
+                        <button onclick="modalDeleteCategory(${category.id})"
+                                class="text-red-500 hover:text-red-700">
+                            删除
+                        </button>
+                    </div>
+                </div>
+                ${category.children?.map(child => renderCategoryItem(child, level + 1)).join('')}
+            `;
+    }
+    async function modalDeleteCategory(id) {
+        await deleteCategory(id);
+        openCategoryModal();
+    }
+    function openEditModal(id) {
+        const category = findCategory(categories, id);
+        if (!category) return;
+
+        editingId = id;
+        document.getElementById('categoryName').value = category.name;
+        document.getElementById('parentCategory').value = category.parentId || '';
+        openCategoryModal();
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCategories();
+        renderCategoryTreeList('categoryList', categories);
+    });
     // Simulate admin link visibility
     const isAdmin = true; // Change this to false to hide admin link
     if (isAdmin) {
