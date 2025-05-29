@@ -5,6 +5,7 @@ import com.example.registration.model.Article;
 import com.example.registration.model.Category;
 import com.example.registration.repository.ArticleRepository;
 import com.example.registration.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,13 +30,15 @@ public class ArticleService {
 
         Article article = new Article();
         article.setTitle(request.getTitle().trim());
-        article.setCategoryName(request.getCategoryId().trim());
+        article.setCategoryId(request.getCategoryId());
         article.setTags(processedTags);
         article.setContent(request.getContent());
         article.setUserId(userId);
         //article.setStatus(request.getIsDraft() ? ArticleStatus.DRAFT : ArticleStatus.PUBLISHED);
         article.setVisibility(request.getVisibility());
-        Category category = categoryRepository.findByName(request.getCategoryId().trim());
+//        Category category = categoryRepository.findById(request.getCategoryId());
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
         category.setArticleCount(category.getArticleCount() + 1);
         categoryRepository.save(category);
         return articleRepository.save(article);

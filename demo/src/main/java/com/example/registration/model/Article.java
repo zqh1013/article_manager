@@ -26,8 +26,8 @@ public class Article {
     private String title;
 
     @Setter
-    @Column(name = "category_name")
-    private String categoryName;
+    @Column(name = "category_id")
+    private Long categoryId;
 
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "JSON")

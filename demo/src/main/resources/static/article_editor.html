@@ -243,7 +243,7 @@
     const checkedRadio = document.querySelector('input[name="visibility"]:checked');
     const formData = {
       title: document.querySelector('input[id="title"]').value,
-      categoryId: document.getElementById('categorySelect').value.trim(),
+      categoryId: document.getElementById('categorySelect').value,
       tags: Array.from(document.querySelectorAll('.tag span:first-child'))
               .map(tag => tag.textContent),
       content: document.querySelector('.editor-content').innerHTML,
