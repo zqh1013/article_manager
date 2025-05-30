@@ -1109,6 +1109,16 @@
         document.getElementById('adminLinkContainer').style.display = 'none';
     }
 
+    // 下拉菜单交互
+    const menuButton = document.getElementById('user-menu-button');
+    const dropdown = document.querySelector('.dropdown-menu');
+
+    menuButton.addEventListener('click', () => {
+      const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+      menuButton.setAttribute('aria-expanded', !isExpanded);
+      dropdown.style.display = isExpanded ? 'none' : 'block';
+    });
+
 </script>
 </body>
 </html>
