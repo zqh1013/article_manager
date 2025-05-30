@@ -1,6 +1,7 @@
 package com.example.registration.service;
 
 import com.example.registration.dto.ArticleCreateRequest;
+import com.example.registration.dto.ArticleWithCategoryDTO;
 import com.example.registration.model.Article;
 import com.example.registration.model.Category;
 import com.example.registration.repository.ArticleRepository;
@@ -60,22 +61,8 @@ public class ArticleService {
 //            return articleRepository.findAll(pageable);
 //        }
 //    }
-    public Page<Article> getArticles(Pageable pageable, Long userId) {
-        // 如果有作者名参数，先查询用户ID
-        if (authorName != null && !authorName.isEmpty()) {
-            userId = userRepository.findUserIdByName(authorName)
-                    .orElse(null); // 如果找不到用户，设为null
-        }
-
-        // 根据条件查询文章
-        if (title != null && userId != null) {
-            return articleRepository.findByTitleContainingAndUserId(title, userId, pageable);
-        } else if (title != null) {
-            return articleRepository.findByTitleContaining(title, pageable);
-        } else if (userId != null) {
-            return articleRepository.findByUserId(userId, pageable);
-        } else {
-            return articleRepository.findAll(pageable);
-        }
+    public Page<ArticleWithCategoryDTO> getArticles(Pageable pageable, Long userId) {
+        Page<ArticleWithCategoryDTO> pages =   articleRepository.findArticlesWithCategoryByUserId(userId, pageable);
+        return pages;
     }
 }

@@ -41,7 +41,7 @@ public class Article {
     private String content;
 
     @Column(name = "user_id", nullable = false)
-    private String userId;  // 关联用户标识
+    private Long userId;  // 关联用户标识
 
     @Setter
     @Column(name = "visibility", nullable = false)
@@ -69,7 +69,7 @@ public class Article {
     }
 
     public void setUserId(Long userId) {
-        this.userId = userId.toString();
+        this.userId = userId;
     }
 }
 

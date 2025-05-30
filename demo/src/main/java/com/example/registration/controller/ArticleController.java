@@ -1,11 +1,13 @@
 package com.example.registration.controller;
 
 import com.example.registration.dto.ArticleCreateRequest;
+import com.example.registration.dto.ArticleWithCategoryDTO;
 import com.example.registration.exception.exception.ResourceNotFoundException;
 import com.example.registration.model.Article;
 import com.example.registration.repository.UserRepository;
 import com.example.registration.service.ArticleService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,14 +53,14 @@ public class ArticleController {
         Long userId = userRepository.findUserIdByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
         // 创建分页请求 (page从1开始计数)
-        Pageable pageable = PageRequest.of(page - 1, limit);
-
+//        Pageable pageable = PageRequest.of(page - 1, limit);
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("createTime").descending());
         // 调用Service获取分页数据
-        Page<Article> articlePage = articleService.getArticles(pageable, userId);
-
-        return ResponseEntity.ok().body(Map.of(
+        Page<ArticleWithCategoryDTO> articlePage = articleService.getArticles(pageable, userId);
+        Map<String, Object> responseBody = Map.of(
                 "total", articlePage.getTotalElements(),
                 "data", articlePage.getContent()
-        ));
+        );
+        return ResponseEntity.ok().body(responseBody);
     }
 }

@@ -362,30 +362,7 @@
         startDate: '',
         endDate: ''
     };
-
-    // 初始化函数
-<!--    document.addEventListener('DOMContentLoaded', () => {-->
-<!--        // 获取URL参数-->
-<!--        const urlParams = new URLSearchParams(window.location.search);-->
-<!--        const email = urlParams.get('email') || null;-->
-
-<!--        if (!email) {-->
-<!--            alert("请先登录");-->
-<!--            window.location.href = 'login.html';-->
-<!--        } else {-->
-<!--            // 加载分类和文章-->
-<!--            alert(1);-->
-<!--            loadCategories();-->
-<!--            alert(2);-->
-<!--            renderCategoryTreeList('categoryList', categories);-->
-<!--            alert(3);-->
-<!--            loadArticles(currentPage);-->
-<!--            alert(4)-->
-<!--            // 设置筛选按钮事件-->
-<!--            document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);-->
-<!--            document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);-->
-<!--        }-->
-<!--    });-->
+    let pageData = null;
 
     // 从API获取文章数据
     async function loadArticles(page) {
@@ -402,7 +379,7 @@
             const params = new URLSearchParams({
                 page: page,
                 limit: articlesPerPage,
-                email: ${email}
+                email: email
             });
 
             // 模拟API请求 - 实际项目中替换为真实API
@@ -411,9 +388,10 @@
             try {
                 const response = await fetch(`/api/articles?${params.toString()}`);
                 if (!response.ok) {
+                    alert(response.status)
                     throw new Error(`API请求失败: ${response.status}`);
                 }
-                const data = await response.json();
+                pageData = await response.json();
             } catch (error) {
                 console.error('获取文章数据失败:', error);
                 const data = {
@@ -424,20 +402,12 @@
                 };
             }
 
-            // 模拟API响应数据
-            // const data = {
-            //     total: 97,
-            //     page: page,
-            //     limit: articlesPerPage,
-            //     data: generateMockArticles(articlesPerPage, page)
-            // };
-
             // 更新全局变量
-            totalArticles = data.total;
+            totalArticles = pageData.total;
             currentPage = page;
 
             // 渲染文章列表
-            renderArticles(data.data);
+            renderArticles(pageData.data);
 
             // 渲染分页组件
             renderPagination();
@@ -472,7 +442,6 @@
             `;
             return;
         }
-
         let html = '';
 
         articles.forEach(article => {
@@ -518,7 +487,7 @@
                         </div>
                     </div>
                     <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">
-                        ${article.content}
+                        摘要暂无
                     </p>
                 </div>
                 <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
@@ -864,8 +833,6 @@
     // 渲染分类树
     function renderCategoryTreeList(containerId, categories, level = 0) {
         const container = document.getElementById(containerId);
-        alert(10);
-        alert(container)
         return container.innerHTML = categories.map(category => renderCategoryTree(category,level)).join('');
     }
     function renderCategoryTree(category, level) {
@@ -1127,9 +1094,7 @@
             alert(email);
             loadCategories();
 
-            alert(3)
             loadArticles(currentPage);
-            alert(4);
             // 设置筛选按钮事件
             document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
             document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);
