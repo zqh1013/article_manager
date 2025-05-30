@@ -442,7 +442,7 @@
 
     // 修改分类
     async function modifyCategory(newCategory) {
-        await fetch('/api/categories/modify', {
+        await fetch(`/api/categories/modify?email=${encodeURIComponent(email)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newCategory)
@@ -454,20 +454,21 @@
     // 删除分类
     async function deleteCategory(id) {
         if (!confirm('确定删除此分类及其所有子分类吗？')) return;
-        await fetch(`/api/categories/${id}`, { method: 'DELETE' });
+        await fetch(`/api/categories/${id}?email=${encodeURIComponent(email)}`,
+                    { method: 'DELETE' });
         await loadCategories();
     }
 
     //从数据库中加载分类
     async function loadCategories() {
-        const response = await fetch('/api/categories');
+        const response = await fetch(`/api/categories?email=${encodeURIComponent(email)}`);
         categories = await response.json();
         renderCategoryTreeList('categoryList', categories);
     }
 
     // 保存新创建的分类
     async function saveCategories(newCategory) {
-        const response = await fetch('/api/categories/add', {
+        const response = await fetch(`/api/categories/add?email=${encodeURIComponent(email)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newCategory)

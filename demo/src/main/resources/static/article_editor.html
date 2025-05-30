@@ -278,7 +278,7 @@
       return;
     }
     const select = document.getElementById('categorySelect');
-    const response = await fetch('/api/categories');
+    const response = await fetch(`/api/categories?email=${encodeURIComponent(email)}`);
     if (!response.ok) alert("1")
     const categories = await response.json();
     const fragment = document.createDocumentFragment();
