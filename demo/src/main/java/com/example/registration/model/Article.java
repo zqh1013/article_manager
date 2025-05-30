@@ -56,6 +56,8 @@ public class Article {
             updatable = false  // 禁止更新[5,7](@ref)
     )
     private LocalDateTime createTime;
+
+
 }
 
 // 列表转换器

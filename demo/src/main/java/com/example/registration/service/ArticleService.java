@@ -7,9 +7,11 @@ import com.example.registration.model.Article;
 import com.example.registration.model.Category;
 import com.example.registration.repository.ArticleRepository;
 import com.example.registration.repository.CategoryRepository;
+import com.example.registration.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +24,11 @@ import org.springframework.data.domain.Pageable;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
+
+//    public ArticleService(ArticleRepository articleRepository,CategoryRepository categoryRepository) {
+//        this.articleRepository = articleRepository;
+//        this.categoryRepository=categoryRepository;
+//    }
 
     @Transactional
     public Article createArticle(Long userId, ArticleCreateRequest request) {
@@ -48,6 +55,18 @@ public class ArticleService {
         categoryRepository.save(category);
         return articleRepository.save(article);
     }
+
+    public void deleteArticleById(Long id) {
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "文章不存在，ID: " + id));
+        Category category = categoryRepository.findById(article.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+        category.setArticleCount(category.getArticleCount() - 1);
+        categoryRepository.save(category);
+        articleRepository.deleteById(id);
+    }
+
 
     // 新增分页查询方法
 //    public Page<Article> getArticles(Pageable pageable, String title, String author) {

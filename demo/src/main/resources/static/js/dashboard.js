@@ -121,13 +121,6 @@ function renderArticles(articles) {
                             <a href="javascript:void(0);" onclick="deleteArticle(${article.id})" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
                                 <i class="fas fa-trash w-4 mr-2"></i>删除
                             </a>
-                            <a href="javascript:moveArticleToCategory(${article.id})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas fa-folder-tree w-4 mr-2"></i>移动分类
-                            </a>
-                            <a href="javascript:toggleArticleVisibility(${article.id}, '${article.visibility === 'public' ? 'private' : 'public'}')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                <i class="fas ${article.visibility === 'public' ? 'fa-lock' : 'fa-share-alt'} w-4 mr-2"></i>
-                                ${article.visibility === 'public' ? '设为私密' : '设为共享'}
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -262,17 +255,19 @@ function resetFilters() {
 }
 
 // 删除文章
-function deleteArticle(articleId) {
+async function deleteArticle(articleId) {
     if (confirm('确定删除这篇文章吗？')) {
         // 模拟API请求
-        // fetch(`/api/articles/${articleId}`, { method: 'DELETE' })
-        //   .then(() => loadArticles(currentPage));
+         await fetch(`/api/articles/${articleId}`, { method: 'DELETE' })
+           .then(() => loadArticles(currentPage));
+
+         await loadCategories();
 
         // 模拟删除成功
-        setTimeout(() => {
-            alert(`文章 #${articleId} 已删除`);
-            loadArticles(currentPage);
-        }, 500);
+//        setTimeout(() => {
+//            alert(`文章 #${articleId} 已删除`);
+//            loadArticles(currentPage);
+//        }, 500);
     }
 }
 

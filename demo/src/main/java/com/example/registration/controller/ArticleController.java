@@ -7,7 +7,9 @@ import com.example.registration.model.Article;
 import com.example.registration.repository.UserRepository;
 import com.example.registration.service.ArticleService;
 import jakarta.validation.Valid;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,4 +88,16 @@ public class ArticleController {
                 "data", article
         ));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteArticle(@PathVariable Long id) {
+        try {
+            articleService.deleteArticleById(id);
+            
+            return ResponseEntity.ok().build();
+        } catch (EmptyResultDataAccessException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("文章不存在");
+        }
+    }
+
 }
