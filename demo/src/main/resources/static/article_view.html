@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查看文章 - 文章管理器</title>
+    <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', 'Noto Sans SC', sans-serif; background-color: #f8fafc; }
+        .article-body img { max-width: 100%; height: auto; border-radius: 0.375rem; margin-top: 1rem; margin-bottom: 1rem; }
+        .article-body p { margin-bottom: 1rem; line-height: 1.75; }
+        .article-body h1, .article-body h2, .article-body h3 { font-weight: 600; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .article-body h1 { font-size: 1.875rem; } /* text-3xl */
+        .article-body h2 { font-size: 1.5rem; }    /* text-2xl */
+        .article-body h3 { font-size: 1.25rem; }   /* text-xl */
+        .comment-avatar { width: 40px; height: 40px; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="dashboard.html" class="flex-shrink-0 flex items-center text-indigo-600 hover:text-indigo-700">
+                        <i class="fas fa-arrow-left mr-3"></i>
+                        <i class="fas fa-book-open text-2xl mr-2"></i>
+                        <span class="text-xl font-semibold text-gray-800">文章管理器</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                     <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto p-6 space-y-8">
+        <!-- Article Content Section -->
+        <article class="bg-white rounded-lg shadow-xl overflow-hidden">
+            <div id="articleHeader" class="p-6 md:p-8 border-b border-gray-200">
+                <!-- JS will populate title, author, date, category -->
+                <h1 id="articleTitleDisplay" class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">文章标题加载中...</h1>
+                <div class="text-sm text-gray-500 flex flex-wrap items-center gap-x-4 gap-y-1">
+                    <span><i class="fas fa-user mr-1.5"></i>作者: <span id="articleAuthor">未知</span></span>
+                    <span><i class="fas fa-calendar-alt mr-1.5"></i>发布于: <span id="articleDate">YYYY-MM-DD</span></span>
+                    <span><i class="fas fa-folder-open mr-1.5"></i>分类: <span id="articleCategoryDisplay" class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs font-medium">未分类</span></span>
+                </div>
+            </div>
+
+            <!-- AI Summary (Story 15) -->
+            <div id="aiSummarySection" class="p-6 md:p-8 bg-indigo-50 border-b border-indigo-200 hidden">
+                <h3 class="text-lg font-semibold text-indigo-800 mb-2 flex items-center">
+                    <i class="fas fa-magic mr-2"></i> AI 生成摘要
+                </h3>
+                <p id="aiSummaryText" class="text-sm text-indigo-700 leading-relaxed">摘要内容加载中...</p>
+            </div>
+
+            <div id="articleBodyDisplay" class="p-6 md:p-8 prose prose-indigo max-w-none article-body">
+                <p>文章内容加载中...</p>
+                <!-- Example of how rich text might look -->
+                <!-- <h2>这是一个二级标题</h2>
+                <p>这是一段<strong>加粗</strong>的文字和<em>斜体</em>的文字。我们还可以有<a href="#" class="text-indigo-600 hover:underline">链接</a>。</p>
+                <img src="https://via.placeholder.com/800x400/E0E7FF/4F46E5?text=示例图片" alt="示例图片">
+                <ul><li>无序列表1</li><li>无序列表2</li></ul> -->
+            </div>
+        </article>
+
+        <!-- Comments Section (Story 14 & 20) -->
+        <section id="commentsSection" class="bg-white rounded-lg shadow-xl p-6 md:p-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">评论区 (<span id="commentCount">0</span>)</h2>
+
+            <!-- New Comment Form -->
+            <div class="mb-8">
+                <div class="flex items-start space-x-3">
+                    <img class="comment-avatar rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="当前用户头像">
+                    <div class="flex-1">
+                        <textarea id="newCommentText" rows="3" placeholder="写下你的评论..." class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm"></textarea>
+                        <button onclick="postComment()" class="mt-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium flex items-center">
+                            <i class="fas fa-paper-plane mr-2"></i>发表评论
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comments List -->
+            <div id="commentsList" class="space-y-6">
+                <!-- Comment Example 1 -->
+                <div class="flex items-start space-x-3 comment-item">
+                    <img class="comment-avatar rounded-full" src="https://randomuser.me/api/portraits/men/32.jpg" alt="评论者头像">
+                    <div class="flex-1">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-semibold text-sm text-gray-800">张三</span>
+                                <span class="text-xs text-gray-500">2024-03-15 10:30</span>
+                            </div>
+                            <p class="text-sm text-gray-700 leading-relaxed">这篇文章写得太棒了，学到了很多！尤其是关于效率提升的部分。</p>
+                        </div>
+                        <div class="mt-1 text-xs text-gray-500">
+                            <button onclick="if(confirm('确定删除这条评论吗？ (管理员/自己)')) { this.closest('.comment-item').remove(); alert('评论已删除'); }" class="hover:text-red-600 font-medium">删除</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Comment Example 2 -->
+                 <div class="flex items-start space-x-3 comment-item">
+                    <img class="comment-avatar rounded-full" src="https://randomuser.me/api/portraits/women/12.jpg" alt="评论者头像">
+                    <div class="flex-1">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-semibold text-sm text-gray-800">李四</span>
+                                <span class="text-xs text-gray-500">2024-03-16 14:20</span>
+                            </div>
+                            <p class="text-sm text-gray-700 leading-relaxed">感谢分享，图片很漂亮，内容也很有启发性。</p>
+                        </div>
+                         <div class="mt-1 text-xs text-gray-500">
+                            <button onclick="if(confirm('确定删除这条评论吗？ (管理员/自己)')) { this.closest('.comment-item').remove(); alert('评论已删除'); }" class="hover:text-red-600 font-medium">删除</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- More comments will be added here by JS -->
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 py-6 mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+            © 2024 文章管理器. All rights reserved.
+        </div>
+    </footer>
+
+    <script>
+        // Simulate loading article data based on URL param (e.g., article_view.html?id=1)
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const articleId = urlParams.get('id') || '1'; // Default to 1 if no ID
+
+            // Simulated article data (in a real app, this would come from a fetch call)
+            const articles = {
+                "1": {
+                    title: "如何提高写作效率并保持创造力",
+                    author: "Jane Smith",
+                    date: "2024-03-15",
+                    category: { name: "学习笔记", colorClass: "bg-blue-100 text-blue-700" },
+                    aiSummary: "本文深入探讨了提高写作效率的多种策略，包括时间管理技巧、高效工具的运用，以及如何捕捉和培养创作灵感。同时，文章还提供了克服写作障碍的实用方法，旨在帮助写作者在日常工作中保持高效和创造性。",
+                    body: `
+                        <p>在信息爆炸的时代，高效的写作能力变得越来越重要。无论是工作报告、技术文档，还是个人博客、创意写作，我们都希望能够快速、准确地表达自己的思想。但效率和创造力往往像天平的两端，难以平衡。本文将分享一些实用的方法，帮助你同时提升这两方面的能力。</p>
+                        <h2 class="text-2xl font-semibold my-4">一、明确目标与规划</h2>
+                        <p>动笔之前，花时间明确写作目标至关重要。你希望通过这篇文章达到什么目的？目标读者是谁？核心信息是什么？清晰的目标能让你在写作过程中保持专注，避免偏离主题。</p>
+                        <img src="https://cdn.pixabay.com/photo/2016/03/27/20/55/arm-1284248_1280.jpg" alt="Planning board" class="my-4 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold my-4">二、善用工具</h2>
+                        <p>选择合适的写作工具能极大提升效率。例如：</p>
+                        <ul>
+                            <li><strong>笔记应用：</strong> Evernote, Notion, Obsidian 用于收集灵感、整理资料。</li>
+                            <li><strong>专注写作工具：</strong> Typora, Ulysses 提供无干扰的写作环境。</li>
+                            <li><strong>语法检查工具：</strong> Grammarly, LanguageTool 帮助你检查语法和风格。</li>
+                        </ul>
+                        <p>找到最适合你的工具组合，并熟练掌握它们。</p>
+                        <h2 class="text-2xl font-semibold my-4">三、培养创造性思维</h2>
+                        <p>创造力并非凭空而来，它需要刻意培养。尝试以下方法：</p>
+                        <ol>
+                            <li><strong>广泛阅读：</strong>接触不同领域的知识，激发新的思考。</li>
+                            <li><strong>定期“头脑风暴”：</strong>不受限制地发散思维，记录下所有想法。</li>
+                            <li><strong>保持好奇心：</strong>对周围的事物多问“为什么”，探索不同的可能性。</li>
+                        </ol>
+                        <p>希望这些方法能帮助你成为一个更高效、更有创造力的写作者！</p>
+                    `
+                },
+                "2": {
+                    title: "项目Alpha第一季度进度报告",
+                    author: "管理员",
+                    date: "2024-03-10",
+                    category: { name: "项目资料", colorClass: "bg-purple-100 text-purple-700" },
+                    aiSummary: "项目Alpha在第一季度取得了显著进展，核心功能模块已完成开发和初步测试。团队协作顺畅，但也面临了资源紧张和部分技术难题。下季度将重点进行集成测试和用户反馈收集。",
+                    body: `
+                        <p>本报告旨在总结项目Alpha在2024年第一季度的进展情况、遇到的挑战以及下一阶段的计划。</p>
+                        <h2 class="text-2xl font-semibold my-4">主要成就</h2>
+                        <ul>
+                            <li>用户认证模块开发完成，并通过安全审计。</li>
+                            <li>核心数据处理引擎搭建完毕，初步性能测试达标。</li>
+                            <li>前端用户界面V1版本设计稿确认，基础框架搭建完成。</li>
+                        </ul>
+                        <h2 class="text-2xl font-semibold my-4">面临挑战与解决方案</h2>
+                        <p><strong>挑战1:</strong> 设计团队人手不足，导致部分UI细节延迟。 <strong>解决方案:</strong> 已申请临时增派1名UI设计师，预计下周到位。</p>
+                        <p><strong>挑战2:</strong> 新采用的XX技术栈在特定场景下出现性能瓶颈。 <strong>解决方案:</strong> 组织技术攻关小组，已找到优化方案，正在实施中。</p>
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cHJvamVjdCUyMG1hbmFnZW1lbnR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=700&q=60" alt="Project meeting" class="my-4 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold my-4">下一季度计划</h2>
+                        <ol>
+                            <li>完成所有核心功能模块的集成测试。</li>
+                            <li>发布内部Alpha版本，收集早期用户反馈。</li>
+                            <li>根据反馈进行迭代优化。</li>
+                        </ol>
+                        <p>感谢团队所有成员的辛勤付出！</p>
+                    `
+                }
+            };
+
+            const currentArticle = articles[articleId] || articles["1"]; // Fallback
+
+            document.getElementById('articleTitleDisplay').textContent = currentArticle.title;
+            document.getElementById('articleAuthor').textContent = currentArticle.author;
+            document.getElementById('articleDate').textContent = currentArticle.date;
+            const categoryDisplay = document.getElementById('articleCategoryDisplay');
+            categoryDisplay.textContent = currentArticle.category.name;
+            categoryDisplay.className = `px-2 py-0.5 rounded-full text-xs font-medium ${currentArticle.category.colorClass}`;
+            document.getElementById('articleBodyDisplay').innerHTML = currentArticle.body;
+
+            if (currentArticle.aiSummary) {
+                document.getElementById('aiSummarySection').classList.remove('hidden');
+                document.getElementById('aiSummaryText').textContent = currentArticle.aiSummary;
+            }
+
+            updateCommentCount();
+        });
+
+        function postComment() {
+            const commentText = document.getElementById('newCommentText').value.trim();
+            if (!commentText) {
+                alert('评论内容不能为空！');
+                return;
+            }
+
+            const commentsList = document.getElementById('commentsList');
+            const newCommentHTML = `
+                <div class="flex items-start space-x-3 comment-item">
+                    <img class="comment-avatar rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="当前用户头像">
+                    <div class="flex-1">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-semibold text-sm text-gray-800">当前用户</span>
+                                <span class="text-xs text-gray-500">${new Date().toLocaleString()}</span>
+                            </div>
+                            <p class="text-sm text-gray-700 leading-relaxed">${escapeHTML(commentText)}</p>
+                        </div>
+                        <div class="mt-1 text-xs text-gray-500">
+                            <button onclick="if(confirm('确定删除这条评论吗？')) { this.closest('.comment-item').remove(); updateCommentCount(); alert('评论已删除'); }" class="hover:text-red-600 font-medium">删除</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            commentsList.insertAdjacentHTML('beforeend', newCommentHTML); // Add to end
+            document.getElementById('newCommentText').value = '';
+            alert('评论发表成功！');
+            updateCommentCount();
+        }
+        
+        function updateCommentCount() {
+            const count = document.querySelectorAll('#commentsList .comment-item').length;
+            document.getElementById('commentCount').textContent = count;
+        }
+
+        function escapeHTML(str) {
+            return str.replace(/[&<>"']/g, function (match) {
+                return {
+                    '&': '&',
+                    '<': '<',
+                    '>': '>',
+                    '"': '"',
+                    "'": '&#39;'
+                }[match];
+            });
+        }
+    </script>
+</body>
+</html>
