@@ -63,4 +63,27 @@ public class ArticleController {
         );
         return ResponseEntity.ok().body(responseBody);
     }
+
+    @GetMapping("/article_editor")
+    public ResponseEntity<?> getArticle(@RequestParam Long articleId) {
+        Article article = articleService.getArticle(articleId);
+        return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "data", article
+        ));
+    }
+    @PostMapping("/article_editor/modify")
+    public ResponseEntity<?> modifyArticle(@RequestParam String email,
+                                           @RequestParam Long articleId,
+                                           @RequestParam Long lastCategoryId,
+                                           @RequestBody ArticleCreateRequest request) {
+        Long userId = userRepository.findUserIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
+        Article article = articleService.modifyArticle(userId, articleId, lastCategoryId,request);
+        return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "message", "文章修改成功",
+                "data", article
+        ));
+    }
 }

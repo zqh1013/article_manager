@@ -2,6 +2,7 @@ package com.example.registration.service;
 
 import com.example.registration.dto.ArticleCreateRequest;
 import com.example.registration.dto.ArticleWithCategoryDTO;
+import com.example.registration.exception.exception.EmailNotRegisteredException;
 import com.example.registration.model.Article;
 import com.example.registration.model.Category;
 import com.example.registration.repository.ArticleRepository;
@@ -64,5 +65,42 @@ public class ArticleService {
     public Page<ArticleWithCategoryDTO> getArticles(Pageable pageable, Long userId) {
         Page<ArticleWithCategoryDTO> pages =   articleRepository.findArticlesWithCategoryByUserId(userId, pageable);
         return pages;
+    }
+
+    public Article getArticle(Long articleId){
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "文章不存在，ID: " + articleId));;
+        return article;
+    }
+
+
+    public Article modifyArticle(Long userId, Long articleId, Long lastCategoryId, ArticleCreateRequest request){
+        List<String> processedTags = request.getTags().stream()
+                .map(String::trim)                  // 去除空格
+                .filter(tag -> !tag.isEmpty())      // 过滤空标签
+                .distinct()                         // 去重
+                .toList();
+
+        Article article = new Article();
+        article.setId(articleId);
+        article.setTitle(request.getTitle().trim());
+        article.setCategoryId(request.getCategoryId());
+        article.setTags(processedTags);
+        article.setContent(request.getContent());
+        article.setUserId(userId);
+        article.setVisibility(request.getVisibility());
+        if(lastCategoryId!=request.getCategoryId()) {
+            Category lastCategory = categoryRepository.findById(lastCategoryId)
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+            lastCategory.setArticleCount(lastCategory.getArticleCount() - 1);
+
+            Category nowCategory = categoryRepository.findById(request.getCategoryId())
+                    .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+            nowCategory.setArticleCount(nowCategory.getArticleCount() + 1);
+            categoryRepository.save(lastCategory);
+            categoryRepository.save(nowCategory);
+        }
+        return articleRepository.save(article);
     }
 }

@@ -115,7 +115,7 @@ function renderArticles(articles) {
                             <i class="fas fa-ellipsis-v"></i>
                         </button>
                         <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">
-                            <a href="article_editor.html?id=${article.id}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="article_modify.html?email=${email}&articleId=${article.id}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <i class="fas fa-edit w-4 mr-2"></i>编辑
                             </a>
                             <a href="javascript:void(0);" onclick="deleteArticle(${article.id})" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">

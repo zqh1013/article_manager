@@ -2,11 +2,14 @@ package com.example.registration.repository;
 
 import com.example.registration.dto.ArticleWithCategoryDTO;
 import com.example.registration.model.Article;
+import com.example.registration.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface ArticleRepository extends JpaRepository<Article, Long> {
     boolean existsByTitleIgnoreCase(String title);
@@ -20,4 +23,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     Page<ArticleWithCategoryDTO> findArticlesWithCategoryByUserId(
             @Param("userId") Long userId,
             Pageable pageable);
+
+    Optional<Article> findById(@Param("id") Long id);
 }

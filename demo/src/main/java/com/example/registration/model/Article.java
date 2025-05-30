@@ -14,7 +14,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Data;
 
+@Data
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "articles")
@@ -54,23 +56,6 @@ public class Article {
             updatable = false  // 禁止更新[5,7](@ref)
     )
     private LocalDateTime createTime;
-
-    public void setTitle(String title) {
-        this.title = title.trim();
-    }
-
-
-    public void setTags(List<String> tags) {
-        this.tags = (List<String>) tags;
-    }
-
-    public void setContent(Object content) {
-        this.content = content == null ? "" : content.toString();
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 }
 
 // 列表转换器
