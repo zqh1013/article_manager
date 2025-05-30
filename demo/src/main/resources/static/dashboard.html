@@ -206,85 +206,98 @@
             </div>
         </div>
 
+<!--        &lt;!&ndash; 文章列表 &ndash;&gt;-->
+<!--        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articleListContainer">-->
+<!--            &lt;!&ndash; Article Card Example 1 &ndash;&gt;-->
+<!--            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">-->
+<!--                <div class="p-5 flex-grow">-->
+<!--                    <div class="flex justify-between items-start mb-1">-->
+<!--                        <a href="article_view.html?id=1" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">如何提高写作效率并保持创造力</a>-->
+<!--                        <div class="relative article-menu">-->
+<!--                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">-->
+<!--                                <i class="fas fa-ellipsis-v"></i>-->
+<!--                            </button>-->
+<!--                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">-->
+<!--                                <a href="article_editor.html?id=1" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-edit w-4 mr-2"></i>编辑</a>-->
+<!--                                <a href="javascript:void(0);" onclick="if(confirm('确定删除这篇文章吗？')) alert('文章已删除');" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-trash w-4 mr-2"></i>删除</a>-->
+<!--                                <a href="javascript:alert('功能：移动文章到其他分类')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-folder-tree w-4 mr-2"></i>移动分类</a>-->
+<!--                                <a href="javascript:alert('功能：文章已设为公开共享')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-share-alt w-4 mr-2"></i>设为共享</a>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">分享一些提高写作效率的技巧和方法，包括时间管理、工具选择、灵感捕捉以及如何克服写作障碍，让你在繁忙中也能持续产出高质量内容。</p>-->
+<!--                </div>-->
+<!--                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">-->
+<!--                    <div class="flex items-center justify-between text-xs text-gray-500">-->
+<!--                        <div>-->
+<!--                            <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">学习笔记</span>-->
+<!--                            <span class="ml-2"><i class="fas fa-lock mr-1"></i> 私密</span>-->
+<!--                        </div>-->
+<!--                        <span>2024-03-15</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Article Card Example 2 (Shared) &ndash;&gt;-->
+<!--            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">-->
+<!--                <div class="p-5 flex-grow">-->
+<!--                    <div class="flex justify-between items-start mb-1">-->
+<!--                        <a href="article_view.html?id=2" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">项目Alpha第一季度进度报告</a>-->
+<!--                        <div class="relative article-menu">-->
+<!--                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">-->
+<!--                                <i class="fas fa-ellipsis-v"></i>-->
+<!--                            </button>-->
+<!--                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">-->
+<!--                                <a href="article_editor.html?id=2" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-edit w-4 mr-2"></i>编辑</a>-->
+<!--                                <a href="javascript:void(0);" onclick="if(confirm('确定删除这篇文章吗？')) alert('文章已删除');" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-trash w-4 mr-2"></i>删除</a>-->
+<!--                                <a href="javascript:alert('功能：移动文章到其他分类')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-folder-tree w-4 mr-2"></i>移动分类</a>-->
+<!--                                <a href="javascript:alert('功能：文章已设为私密')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-lock w-4 mr-2"></i>设为私密</a>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">详细汇总了项目Alpha在第一季度的主要进展、遇到的挑战及解决方案，并对下一阶段的目标和计划进行了展望。</p>-->
+<!--                </div>-->
+<!--                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">-->
+<!--                    <div class="flex items-center justify-between text-xs text-gray-500">-->
+<!--                        <div>-->
+<!--                            <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">项目资料</span>-->
+<!--                            <span class="ml-2 text-green-600"><i class="fas fa-globe-asia mr-1"></i> 公开共享</span>-->
+<!--                        </div>-->
+<!--                        <span>2024-03-10</span>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            &lt;!&ndash; Add more cards as needed &ndash;&gt;-->
+<!--        </div>-->
+<!--        &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg shadow mt-6" aria-label="Pagination">-->
+<!--            <div class="hidden sm:block">-->
+<!--                <p class="text-sm text-gray-700">-->
+<!--                    显示第 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 条，共 <span class="font-medium">97</span> 条结果-->
+<!--                </p>-->
+<!--            </div>-->
+<!--            <div class="flex-1 flex justify-between sm:justify-end">-->
+<!--                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">-->
+<!--                    上一页-->
+<!--                </a>-->
+<!--                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">-->
+<!--                    下一页-->
+<!--                </a>-->
+<!--            </div>-->
+<!--        </nav>-->
         <!-- 文章列表 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articleListContainer">
-            <!-- Article Card Example 1 -->
-            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-                <div class="p-5 flex-grow">
-                    <div class="flex justify-between items-start mb-1">
-                        <a href="article_view.html?id=1" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">如何提高写作效率并保持创造力</a>
-                        <div class="relative article-menu">
-                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">
-                                <a href="article_editor.html?id=1" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-edit w-4 mr-2"></i>编辑</a>
-                                <a href="javascript:void(0);" onclick="if(confirm('确定删除这篇文章吗？')) alert('文章已删除');" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-trash w-4 mr-2"></i>删除</a>
-                                <a href="javascript:alert('功能：移动文章到其他分类')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-folder-tree w-4 mr-2"></i>移动分类</a>
-                                <a href="javascript:alert('功能：文章已设为公开共享')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-share-alt w-4 mr-2"></i>设为共享</a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">分享一些提高写作效率的技巧和方法，包括时间管理、工具选择、灵感捕捉以及如何克服写作障碍，让你在繁忙中也能持续产出高质量内容。</p>
-                </div>
-                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
-                    <div class="flex items-center justify-between text-xs text-gray-500">
-                        <div>
-                            <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">学习笔记</span>
-                            <span class="ml-2"><i class="fas fa-lock mr-1"></i> 私密</span>
-                        </div>
-                        <span>2024-03-15</span>
-                    </div>
-                </div>
+            <!-- 动态加载的文章卡片将显示在这里 -->
+            <div id="loadingIndicator" class="col-span-3 flex justify-center py-12">
+                <div class="loading-spinner"></div>
+                <p class="ml-4 text-gray-600">正在加载文章数据...</p>
             </div>
-
-            <!-- Article Card Example 2 (Shared) -->
-            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-                <div class="p-5 flex-grow">
-                    <div class="flex justify-between items-start mb-1">
-                        <a href="article_view.html?id=2" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">项目Alpha第一季度进度报告</a>
-                        <div class="relative article-menu">
-                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">
-                                <a href="article_editor.html?id=2" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-edit w-4 mr-2"></i>编辑</a>
-                                <a href="javascript:void(0);" onclick="if(confirm('确定删除这篇文章吗？')) alert('文章已删除');" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-trash w-4 mr-2"></i>删除</a>
-                                <a href="javascript:alert('功能：移动文章到其他分类')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-folder-tree w-4 mr-2"></i>移动分类</a>
-                                <a href="javascript:alert('功能：文章已设为私密')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-lock w-4 mr-2"></i>设为私密</a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">详细汇总了项目Alpha在第一季度的主要进展、遇到的挑战及解决方案，并对下一阶段的目标和计划进行了展望。</p>
-                </div>
-                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
-                    <div class="flex items-center justify-between text-xs text-gray-500">
-                        <div>
-                            <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">项目资料</span>
-                            <span class="ml-2 text-green-600"><i class="fas fa-globe-asia mr-1"></i> 公开共享</span>
-                        </div>
-                        <span>2024-03-10</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Add more cards as needed -->
         </div>
         <!-- Pagination -->
-        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg shadow mt-6" aria-label="Pagination">
-            <div class="hidden sm:block">
-                <p class="text-sm text-gray-700">
-                    显示第 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 条，共 <span class="font-medium">97</span> 条结果
-                </p>
-            </div>
-            <div class="flex-1 flex justify-between sm:justify-end">
-                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    上一页
-                </a>
-                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    下一页
-                </a>
-            </div>
+        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg shadow mt-6" aria-label="Pagination" id="paginationContainer">
+            <!-- 分页内容将通过JavaScript动态生成 -->
         </nav>
+
     </main>
 </div>
 
@@ -338,6 +351,463 @@
 </footer>
 
 <script>
+    // 全局变量
+    let categories = null;
+    let currentPage = 1;
+    const articlesPerPage = 9; // 每页显示9篇文章（3x3网格）
+    let totalArticles = 0;
+    let currentFilter = {
+        keyword: '',
+        category: '',
+        startDate: '',
+        endDate: ''
+    };
+
+    // 初始化函数
+<!--    document.addEventListener('DOMContentLoaded', () => {-->
+<!--        // 获取URL参数-->
+<!--        const urlParams = new URLSearchParams(window.location.search);-->
+<!--        const email = urlParams.get('email') || null;-->
+
+<!--        if (!email) {-->
+<!--            alert("请先登录");-->
+<!--            window.location.href = 'login.html';-->
+<!--        } else {-->
+<!--            // 加载分类和文章-->
+<!--            alert(1);-->
+<!--            loadCategories();-->
+<!--            alert(2);-->
+<!--            renderCategoryTreeList('categoryList', categories);-->
+<!--            alert(3);-->
+<!--            loadArticles(currentPage);-->
+<!--            alert(4)-->
+<!--            // 设置筛选按钮事件-->
+<!--            document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);-->
+<!--            document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);-->
+<!--        }-->
+<!--    });-->
+
+    // 从API获取文章数据
+    async function loadArticles(page) {
+        try {
+            // 显示加载状态
+            document.getElementById('articleListContainer').innerHTML = `
+                <div class="col-span-3 flex justify-center py-12">
+                    <div class="loading-spinner"></div>
+                    <p class="ml-4 text-gray-600">正在加载文章数据...</p>
+                </div>
+            `;
+
+            // 构建查询参数
+            const params = new URLSearchParams({
+                page: page,
+                limit: articlesPerPage,
+                ...currentFilter
+            });
+
+            // 模拟API请求 - 实际项目中替换为真实API
+            // const response = await fetch(`/api/articles?${params.toString()}`);
+            // const data = await response.json();
+            try {
+                const response = await fetch(`/api/articles?${params.toString()}`);
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                const data = await response.json();
+            } catch (error) {
+                console.error('获取文章数据失败:', error);
+                const data = {
+                    total: 0,
+                    page: 1,
+                    limit: articlesPerPage,
+                    data: []
+                };
+            }
+
+            // 模拟API响应数据
+            // const data = {
+            //     total: 97,
+            //     page: page,
+            //     limit: articlesPerPage,
+            //     data: generateMockArticles(articlesPerPage, page)
+            // };
+
+            // 更新全局变量
+            totalArticles = data.total;
+            currentPage = data.page;
+
+            // 渲染文章列表
+            renderArticles(data.data);
+
+            // 渲染分页组件
+            renderPagination();
+
+        } catch (error) {
+            console.error('加载文章失败:', error);
+            document.getElementById('articleListContainer').innerHTML = `
+                <div class="col-span-3 text-center py-12">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                    <p class="text-gray-600">加载文章失败，请稍后再试</p>
+                    <button onclick="loadArticles(currentPage)" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                        重新加载
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // 渲染文章列表
+    function renderArticles(articles) {
+        const container = document.getElementById('articleListContainer');
+
+        if (articles.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-3 text-center py-12">
+                    <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
+                    <p class="text-gray-600">没有找到符合条件的文章</p>
+                    <button onclick="createArticle()" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                        创建新文章
+                    </button>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+
+        articles.forEach(article => {
+            // 根据可见性设置图标和文本
+            const visibilityIcon = article.visibility === 'public'
+                ? '<i class="fas fa-globe-asia mr-1"></i>'
+                : '<i class="fas fa-lock mr-1"></i>';
+
+            const visibilityText = article.visibility === 'public'
+                ? '公开共享'
+                : '私密';
+
+            const visibilityClass = article.visibility === 'public'
+                ? 'text-green-600'
+                : '';
+
+            html += `
+            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+                <div class="p-5 flex-grow">
+                    <div class="flex justify-between items-start mb-1">
+                        <a href="article_view.html?id=${article.id}" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
+                            ${article.title}
+                        </a>
+                        <div class="relative article-menu">
+                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">
+                                <a href="article_editor.html?id=${article.id}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-edit w-4 mr-2"></i>编辑
+                                </a>
+                                <a href="javascript:void(0);" onclick="deleteArticle(${article.id})" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i class="fas fa-trash w-4 mr-2"></i>删除
+                                </a>
+                                <a href="javascript:moveArticleToCategory(${article.id})" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-folder-tree w-4 mr-2"></i>移动分类
+                                </a>
+                                <a href="javascript:toggleArticleVisibility(${article.id}, '${article.visibility === 'public' ? 'private' : 'public'}')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas ${article.visibility === 'public' ? 'fa-lock' : 'fa-share-alt'} w-4 mr-2"></i>
+                                    ${article.visibility === 'public' ? '设为私密' : '设为共享'}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">
+                        ${article.content}
+                    </p>
+                </div>
+                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
+                    <div class="flex items-center justify-between text-xs text-gray-500">
+                        <div>
+                            <span class="${getCategoryColorClass(article.category_id)} px-2 py-0.5 rounded-full font-medium">
+                                ${article.category_name}
+                            </span>
+                            <span class="ml-2 ${visibilityClass}">
+                                ${visibilityIcon} ${visibilityText}
+                            </span>
+                        </div>
+                        <span>${formatDate(article.create_time)}</span>
+                    </div>
+                </div>
+            </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // 重新绑定文章菜单事件
+        bindArticleMenuEvents();
+    }
+
+    // 渲染分页组件
+    function renderPagination() {
+        const totalPages = Math.ceil(totalArticles / articlesPerPage);
+        const container = document.getElementById('paginationContainer');
+
+        let html = `
+            <div class="hidden sm:block">
+                <p class="text-sm text-gray-700">
+                    显示第 <span class="font-medium">${(currentPage - 1) * articlesPerPage + 1}</span>
+                    到 <span class="font-medium">${Math.min(currentPage * articlesPerPage, totalArticles)}</span> 条，
+                    共 <span class="font-medium">${totalArticles}</span> 条结果
+                </p>
+            </div>
+            <div class="flex-1 flex justify-between sm:justify-end">
+        `;
+
+        // 上一页按钮
+        html += `
+            <button onclick="changePage(${currentPage - 1})"
+                ${currentPage === 1 ? 'disabled' : ''}
+                class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+                上一页
+            </button>
+        `;
+
+        // 页码按钮
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            html += `
+                <button onclick="changePage(${i})"
+                    class="relative inline-flex items-center px-4 py-2 border text-sm font-medium mx-1 rounded-md
+                    ${i === currentPage ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}">
+                    ${i}
+                </button>
+            `;
+        }
+
+        // 下一页按钮
+        html += `
+            <button onclick="changePage(${currentPage + 1})"
+                ${currentPage === totalPages ? 'disabled' : ''}
+                class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
+                下一页
+            </button>
+        `;
+
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    // 切换页面
+    function changePage(page) {
+        const totalPages = Math.ceil(totalArticles / articlesPerPage);
+
+        if (page < 1 || page > totalPages) return;
+
+        currentPage = page;
+        loadArticles(page);
+
+        // 滚动到顶部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 应用筛选条件
+    function applyFilters() {
+        currentFilter = {
+            keyword: document.getElementById('filter-keyword').value,
+            category: document.getElementById('filter-category').value,
+            startDate: document.getElementById('filter-date-start').value,
+            endDate: document.getElementById('filter-date-end').value
+        };
+
+        // 重置到第一页
+        currentPage = 1;
+        loadArticles(currentPage);
+    }
+
+    // 重置筛选条件
+    function resetFilters() {
+        document.getElementById('filter-keyword').value = '';
+        document.getElementById('filter-category').value = '';
+        document.getElementById('filter-date-start').value = '';
+        document.getElementById('filter-date-end').value = '';
+
+        currentFilter = {
+            keyword: '',
+            category: '',
+            startDate: '',
+            endDate: ''
+        };
+
+        // 重置到第一页
+        currentPage = 1;
+        loadArticles(currentPage);
+    }
+
+    // 删除文章
+    function deleteArticle(articleId) {
+        if (confirm('确定删除这篇文章吗？')) {
+            // 模拟API请求
+            // fetch(`/api/articles/${articleId}`, { method: 'DELETE' })
+            //   .then(() => loadArticles(currentPage));
+
+            // 模拟删除成功
+            setTimeout(() => {
+                alert(`文章 #${articleId} 已删除`);
+                loadArticles(currentPage);
+            }, 500);
+        }
+    }
+
+    // 切换文章可见性
+    function toggleArticleVisibility(articleId, newVisibility) {
+        // 模拟API请求
+        // fetch(`/api/articles/${articleId}/visibility`, {
+        //   method: 'PUT',
+        //   headers: { 'Content-Type': 'application/json' },
+        //   body: JSON.stringify({ visibility: newVisibility })
+        // }).then(() => loadArticles(currentPage));
+
+        // 模拟更新成功
+        setTimeout(() => {
+            alert(`文章 #${articleId} 已设为 ${newVisibility === 'public' ? '公开' : '私密'}`);
+            loadArticles(currentPage);
+        }, 500);
+    }
+
+    // 移动文章到其他分类
+    function moveArticleToCategory(articleId) {
+        // 实际实现中，这里应该弹出一个分类选择对话框
+        const newCategoryId = prompt('请输入新的分类ID:');
+        if (newCategoryId) {
+            // 模拟API请求
+            // fetch(`/api/articles/${articleId}/category`, {
+            //   method: 'PUT',
+            //   headers: { 'Content-Type': 'application/json' },
+            //   body: JSON.stringify({ category_id: newCategoryId })
+            // }).then(() => loadArticles(currentPage));
+
+            // 模拟更新成功
+            setTimeout(() => {
+                alert(`文章 #${articleId} 已移动到分类 #${newCategoryId}`);
+                loadArticles(currentPage);
+            }, 500);
+        }
+    }
+
+    // 辅助函数：生成模拟文章数据
+    function generateMockArticles(count, page) {
+        const categories = [
+            { id: 1, name: '工作文档', color: 'bg-purple-100 text-purple-700' },
+            { id: 2, name: '学习笔记', color: 'bg-blue-100 text-blue-700' },
+            { id: 3, name: '项目资料', color: 'bg-green-100 text-green-700' },
+            { id: 4, name: '个人日记', color: 'bg-yellow-100 text-yellow-700' }
+        ];
+
+        const titles = [
+            '如何提高写作效率并保持创造力',
+            '项目Alpha第一季度进度报告',
+            '前端开发最佳实践',
+            '2024年技术趋势预测',
+            '团队协作工具比较',
+            '用户体验设计原则',
+            '数据库优化技巧',
+            '机器学习入门指南',
+            '高效会议管理策略',
+            '远程工作挑战与解决方案'
+        ];
+
+        const contents = [
+            '分享一些提高写作效率的技巧和方法，包括时间管理、工具选择、灵感捕捉以及如何克服写作障碍，让你在繁忙中也能持续产出高质量内容。',
+            '详细汇总了项目在第一季度的主要进展、遇到的挑战及解决方案，并对下一阶段的目标和计划进行了展望。',
+            '探讨现代前端开发中的最佳实践，包括组件设计、状态管理、性能优化和测试策略。',
+            '分析2024年可能影响技术行业的主要趋势，包括人工智能、云计算、区块链和量子计算。',
+            '比较市场上流行的团队协作工具，分析各自的优缺点，帮助你选择最适合团队的工具。',
+            '介绍用户体验设计的核心原则，帮助你创建直观、易用且愉悦的用户界面。',
+            '分享数据库性能优化的实用技巧，包括索引优化、查询优化和架构设计。',
+            '为初学者提供的机器学习入门指南，涵盖基本概念、常用算法和实践项目。',
+            '提供高效管理会议的实用策略，帮助团队节省时间并提高会议效率。',
+            '探讨远程工作面临的挑战，并提供有效的解决方案和最佳实践。'
+        ];
+
+        const articles = [];
+        const startIndex = (page - 1) * articlesPerPage;
+
+        for (let i = 0; i < count; i++) {
+            const index = startIndex + i;
+            const category = categories[Math.floor(Math.random() * categories.length)];
+
+            articles.push({
+                id: index + 1,
+                title: titles[index % titles.length],
+                content: contents[index % contents.length],
+                category_id: category.id,
+                category_name: category.name,
+                create_time: `2024-0${Math.floor(Math.random() * 3) + 1}-${Math.floor(Math.random() * 28) + 1}`,
+                visibility: Math.random() > 0.5 ? 'public' : 'private',
+                tags: ['重要', '待办', '参考'][Math.floor(Math.random() * 3)]
+            });
+        }
+
+        return articles;
+    }
+
+    // 辅助函数：获取分类颜色类
+    function getCategoryColorClass(categoryId) {
+        const colors = {
+            1: 'bg-purple-100 text-purple-700',
+            2: 'bg-blue-100 text-blue-700',
+            3: 'bg-green-100 text-green-700',
+            4: 'bg-yellow-100 text-yellow-700'
+        };
+
+        return colors[categoryId] || 'bg-gray-100 text-gray-700';
+    }
+
+    // 辅助函数：格式化日期
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toISOString().split('T')[0];
+    }
+
+    // 重新绑定文章菜单事件
+    function bindArticleMenuEvents() {
+        // 文章卡片菜单下拉
+        document.querySelectorAll('.article-menu-button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                // 关闭其他打开的菜单
+                document.querySelectorAll('.article-menu .dropdown-menu').forEach(m => {
+                    if (m !== this.nextElementSibling) m.classList.add('hidden');
+                });
+                this.nextElementSibling.classList.toggle('hidden');
+                event.stopPropagation();
+            });
+        });
+
+        // 点击其他地方关闭文章菜单
+        document.body.addEventListener('click', function(event) {
+            document.querySelectorAll('.article-menu .dropdown-menu').forEach(menu => {
+                if (!menu.parentElement.contains(event.target)) {
+                    menu.classList.add('hidden');
+                }
+            });
+        });
+    }
+
+    // 新建文章函数
+    function createArticle() {
+        window.location.href = `article_editor.html?email=${email}`;
+    }
+
+    // 保留原有的分类管理功能
+    // ...（原有的分类管理代码保持不变）...
+
+
+
+
     // 移动端菜单切换
     const mobileMenuButton = document.querySelector('.mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -390,12 +860,12 @@
 
 
     //--------------------------分类编辑---------------------------------------------------------
-    let categories = null;
-    let id_cnt = 0;
 
     // 渲染分类树
     function renderCategoryTreeList(containerId, categories, level = 0) {
         const container = document.getElementById(containerId);
+        alert(10);
+        alert(container)
         return container.innerHTML = categories.map(category => renderCategoryTree(category,level)).join('');
     }
     function renderCategoryTree(category, level) {
@@ -656,9 +1126,16 @@
         }else {
             alert(email);
             loadCategories();
-            renderCategoryTreeList('categoryList', categories);
+
+            alert(3)
+            loadArticles(currentPage);
+            alert(4);
+            // 设置筛选按钮事件
+            document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
+            document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);
         }
     });
+
     // Simulate admin link visibility
     const isAdmin = true; // Change this to false to hide admin link
     if (isAdmin) {

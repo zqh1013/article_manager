@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @Service
 @RequiredArgsConstructor
 public class ArticleService {
@@ -42,5 +45,38 @@ public class ArticleService {
         category.setArticleCount(category.getArticleCount() + 1);
         categoryRepository.save(category);
         return articleRepository.save(article);
+    }
+
+    // 新增分页查询方法
+//    public Page<Article> getArticles(Pageable pageable, String title, String author) {
+//        // 示例实现 - 根据你的实际数据访问层调整
+//        if (title != null && author != null) {
+//            return articleRepository.findByTitleContainingAndAuthorContaining(title, author, pageable);
+//        } else if (title != null) {
+//            return articleRepository.findByTitleContaining(title, pageable);
+//        } else if (author != null) {
+//            return articleRepository.findByAuthorContaining(author, pageable);
+//        } else {
+//            return articleRepository.findAll(pageable);
+//        }
+//    }
+    public Page<Article> getArticles(Pageable pageable, String title, String userId) {
+        // 如果有作者名参数，先查询用户ID
+        Long userId = null;
+        if (authorName != null && !authorName.isEmpty()) {
+            userId = userRepository.findUserIdByName(authorName)
+                    .orElse(null); // 如果找不到用户，设为null
+        }
+
+        // 根据条件查询文章
+        if (title != null && userId != null) {
+            return articleRepository.findByTitleContainingAndUserId(title, userId, pageable);
+        } else if (title != null) {
+            return articleRepository.findByTitleContaining(title, pageable);
+        } else if (userId != null) {
+            return articleRepository.findByUserId(userId, pageable);
+        } else {
+            return articleRepository.findAll(pageable);
+        }
     }
 }

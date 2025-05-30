@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+
+// 新增导入
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/api/articles")
 public class ArticleController {
@@ -34,5 +40,30 @@ public class ArticleController {
                 "message", "文章创建成功",
                 "data", article
         ));
+    }
+
+    // 新增分页查询API
+    @GetMapping
+    public ResponseEntity<?> getArticles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String userId) {
+
+        // 创建分页请求 (page从1开始计数)
+        Pageable pageable = PageRequest.of(page - 1, limit);
+
+        // 调用Service获取分页数据
+        Page<Article> articlePage = articleService.getArticles(pageable, title, userId);
+
+        // 构建响应数据结构
+        Map<String, Object> response = Map.of(
+                "total", articlePage.getTotalElements(),
+                "page", page,
+                "limit", limit,
+                "data", articlePage.getContent()
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
