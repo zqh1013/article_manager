@@ -68,8 +68,7 @@
                     <span class="text-xl font-semibold text-gray-800">文章管理器</span>
                 </div>
                 <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    <a href="dashboard.html" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">仪表盘</a>
-                    <a href="javascript:alert('功能：筛选显示我的文章')" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">我的文章</a>
+                    <a href="dashboard.html" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">我的文章</a>
                     <a href="javascript:alert('功能：筛选显示共享文章')" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">共享文章</a>
                     <a href="statistics.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">统计分析</a>
                 </div>
@@ -142,7 +141,7 @@
     <!-- 侧边栏 -->
     <aside class="sidebar w-64 bg-white shadow-lg hidden md:block h-screen sticky top-16 overflow-y-auto p-4 space-y-6">
         <div>
-            <a href="article_editor.html" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center text-sm font-medium">
+            <a href="javascript:createArticle();" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center text-sm font-medium">
                 <i class="fas fa-plus mr-2"></i> 新建文章
             </a>
         </div>
@@ -639,11 +638,25 @@
         document.getElementById('parentCategory').value = category.parentId || '';
         openCategoryModal();
     }
+    let email = null;
+    //新建文章函数
+    //"article_editor.html"
+    function createArticle(){
+        window.location.href = `article_editor.html?email=${email}`
+    }
 
     // 初始化
     document.addEventListener('DOMContentLoaded', () => {
-        loadCategories();
-        renderCategoryTreeList('categoryList', categories);
+        const urlParams = new URLSearchParams(window.location.search);
+        email = urlParams.get('email') || null;
+        if(!email){
+            alert("请先登录");
+            window.location.href = 'login.html';
+        }else {
+            alert(email);
+            loadCategories();
+            renderCategoryTreeList('categoryList', categories);
+        }
     });
     // Simulate admin link visibility
     const isAdmin = true; // Change this to false to hide admin link

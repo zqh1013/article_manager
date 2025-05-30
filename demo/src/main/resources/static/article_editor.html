@@ -249,10 +249,13 @@
       content: document.querySelector('.editor-content').innerHTML,
       visibility: checkedRadio.value.trim()
     };
-    const email = localStorage.getItem('userEmail');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email') || null;
     if (!email) {
       alert("请先登录");
       window.location.href = 'login.html';
+      return;
     }
     const response = await fetch(`/api/articles/article_editor?email=${encodeURIComponent(email)}`, {
       method: 'POST',

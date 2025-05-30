@@ -62,7 +62,6 @@
 <script>
   document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    alert("1")
     const formData = {
       email: document.querySelector('input[name="email"]').value.trim(),
       password: document.querySelector('input[name="password"]').value
@@ -77,8 +76,9 @@
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('userEmail', document.querySelector('input[name="email"]').value.trim());
-        window.location.href = 'dashboard.html';
+        // localStorage.setItem('userEmail', document.querySelector('input[name="email"]').value.trim());
+        window.location.href = `dashboard.html?email=${formData.email}`
+        // window.location.href = 'dashboard.html?email=${formData.email}}';
       } else {
         alert(data.message)
       }
