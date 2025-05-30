@@ -9,12 +9,14 @@ import jakarta.validation.constraints.Size;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "articles")
 public class Article {
     @Id
@@ -45,6 +47,13 @@ public class Article {
     @Column(name = "visibility", nullable = false)
     private String visibility;
 
+    @CreatedDate
+    @Column(
+            name = "create_time",
+            nullable = false,
+            updatable = false  // 禁止更新[5,7](@ref)
+    )
+    private LocalDateTime createTime;
 
     public void setTitle(String title) {
         this.title = title.trim();

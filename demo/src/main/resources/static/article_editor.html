@@ -208,6 +208,7 @@
 </div>
 
 <script>
+  let email = null;
   // 标签管理逻辑
   const tagsInput = document.querySelector('.tags-input');
   const tagInput = tagsInput.querySelector('input');
@@ -250,13 +251,6 @@
       visibility: checkedRadio.value.trim()
     };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get('email') || null;
-    if (!email) {
-      alert("请先登录");
-      window.location.href = 'login.html';
-      return;
-    }
     const response = await fetch(`/api/articles/article_editor?email=${encodeURIComponent(email)}`, {
       method: 'POST',
       headers: {
@@ -268,13 +262,21 @@
     const data = await response.json();
     if (response.ok) {
       alert("文章创建成功");
-      window.location.href = 'dashboard.html'; // 跳转到列表页
+      window.location.href = `dashboard.html?email=${email}`; // 跳转到列表页
     } else {
+      alert(1)
       alert(data.message); // 显示错误提示
     }
    });
 
   window.addEventListener('DOMContentLoaded', async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    email = urlParams.get('email') || null;
+    if (!email) {
+      alert("请先登录");
+      window.location.href = 'login.html';
+      return;
+    }
     const select = document.getElementById('categorySelect');
     const response = await fetch('/api/categories');
     if (!response.ok) alert("1")
