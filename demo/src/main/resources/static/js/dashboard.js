@@ -104,7 +104,7 @@ function renderArticles(articles) {
             : '';
 
         html += `
-        <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
+        <div class="card-hover bg-white rounded-lg shadow-md overflow-visible flex flex-col">
             <div class="p-5 flex-grow">
                 <div class="flex justify-between items-start mb-1">
                     <a href="article_view.html?id=${article.id}" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
@@ -669,7 +669,7 @@ if (isAdmin) {
 
 // 用户头像下拉菜单交互
 const menuButton = document.getElementById('user-menu-button');
-const dropdown = document.querySelector('.dropdown-menu');
+const dropdown = document.querySelector('.user-dropdown-menu');
 menuButton.addEventListener('click', () => {
   const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
   menuButton.setAttribute('aria-expanded', !isExpanded);
