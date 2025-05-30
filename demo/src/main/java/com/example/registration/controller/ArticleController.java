@@ -47,23 +47,18 @@ public class ArticleController {
     public ResponseEntity<?> getArticles(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String userId) {
-
+            @RequestParam String email) {
+        Long userId = userRepository.findUserIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
         // 创建分页请求 (page从1开始计数)
         Pageable pageable = PageRequest.of(page - 1, limit);
 
         // 调用Service获取分页数据
-        Page<Article> articlePage = articleService.getArticles(pageable, title, userId);
+        Page<Article> articlePage = articleService.getArticles(pageable, userId);
 
-        // 构建响应数据结构
-        Map<String, Object> response = Map.of(
+        return ResponseEntity.ok().body(Map.of(
                 "total", articlePage.getTotalElements(),
-                "page", page,
-                "limit", limit,
                 "data", articlePage.getContent()
-        );
-
-        return ResponseEntity.ok(response);
+        ));
     }
 }

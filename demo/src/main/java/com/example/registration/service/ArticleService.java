@@ -60,9 +60,8 @@ public class ArticleService {
 //            return articleRepository.findAll(pageable);
 //        }
 //    }
-    public Page<Article> getArticles(Pageable pageable, String title, String userId) {
+    public Page<Article> getArticles(Pageable pageable, Long userId) {
         // 如果有作者名参数，先查询用户ID
-        Long userId = null;
         if (authorName != null && !authorName.isEmpty()) {
             userId = userRepository.findUserIdByName(authorName)
                     .orElse(null); // 如果找不到用户，设为null

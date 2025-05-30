@@ -402,7 +402,7 @@
             const params = new URLSearchParams({
                 page: page,
                 limit: articlesPerPage,
-                ...currentFilter
+                email: ${email}
             });
 
             // 模拟API请求 - 实际项目中替换为真实API
@@ -434,7 +434,7 @@
 
             // 更新全局变量
             totalArticles = data.total;
-            currentPage = data.page;
+            currentPage = page;
 
             // 渲染文章列表
             renderArticles(data.data);
