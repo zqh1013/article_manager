@@ -386,34 +386,101 @@
     }
 
     // 渲染分页组件
+    // function renderPagination() {
+    //     const totalPages = Math.ceil(totalArticles / articlesPerPage);
+    //     const container = document.getElementById('paginationContainer');
+    //
+    //     if (totalPages <= 1) {
+    //         container.innerHTML = '';
+    //         return;
+    //     }
+    //
+    //     let html = `
+    //         <div class="hidden sm:block">
+    //             <p class="text-sm text-gray-700">
+    //                 显示第 <span class="font-medium">${(currentPage - 1) * articlesPerPage + 1}</span>
+    //                 到 <span class="font-medium">${Math.min(currentPage * articlesPerPage, totalArticles)}</span> 条，
+    //                 共 <span class="font-medium">${totalArticles}</span> 条结果
+    //             </p>
+    //         </div>
+    //         <div class="flex-1 flex justify-between sm:justify-end items-center space-x-2">
+    //     `;
+    //
+    //     // 上一页按钮
+    //     html += `
+    //         <button onclick="changePage(${currentPage - 1})"
+    //             ${currentPage === 1 ? 'disabled' : ''}
+    //             class="pagination-btn ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+    //             上一页
+    //         </button>
+    //     `;
+    //
+    //     // 页码按钮
+    //     const maxVisiblePages = 5;
+    //     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    //     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    //
+    //     if (endPage - startPage < maxVisiblePages - 1) {
+    //         startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    //     }
+    //
+    //     for (let i = startPage; i <= endPage; i++) {
+    //         html += `
+    //             <button onclick="changePage(${i})"
+    //                 class="pagination-btn ${i === currentPage ? 'active' : ''}">
+    //                 ${i}
+    //             </button>
+    //         `;
+    //     }
+    //
+    //     // 下一页按钮
+    //     html += `
+    //         <button onclick="changePage(${currentPage + 1})"
+    //             ${currentPage === totalPages ? 'disabled' : ''}
+    //             class="pagination-btn ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
+    //             下一页
+    //         </button>
+    //     `;
+    //
+    //     html += `</div>`;
+    //     container.innerHTML = html;
+    // }
+
+    // 切换页面
+    // function changePage(page) {
+    //     const totalPages = Math.ceil(totalArticles / articlesPerPage);
+    //
+    //     if (page < 1 || page > totalPages) return;
+    //
+    //     currentPage = page;
+    //     loadSharedArticles(page);
+    //
+    //     // 滚动到顶部
+    //     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // }
     function renderPagination() {
         const totalPages = Math.ceil(totalArticles / articlesPerPage);
         const container = document.getElementById('paginationContainer');
 
-        if (totalPages <= 1) {
-            container.innerHTML = '';
-            return;
-        }
-
         let html = `
-            <div class="hidden sm:block">
-                <p class="text-sm text-gray-700">
-                    显示第 <span class="font-medium">${(currentPage - 1) * articlesPerPage + 1}</span>
-                    到 <span class="font-medium">${Math.min(currentPage * articlesPerPage, totalArticles)}</span> 条，
-                    共 <span class="font-medium">${totalArticles}</span> 条结果
-                </p>
-            </div>
-            <div class="flex-1 flex justify-between sm:justify-end items-center space-x-2">
-        `;
+        <div class="hidden sm:block">
+            <p class="text-sm text-gray-700">
+                显示第 <span class="font-medium">${(currentPage - 1) * articlesPerPage + 1}</span>
+                到 <span class="font-medium">${Math.min(currentPage * articlesPerPage, totalArticles)}</span> 条，
+                共 <span class="font-medium">${totalArticles}</span> 条结果
+            </p>
+        </div>
+        <div class="flex-1 flex justify-between sm:justify-end">
+    `;
 
         // 上一页按钮
         html += `
-            <button onclick="changePage(${currentPage - 1})"
-                ${currentPage === 1 ? 'disabled' : ''}
-                class="pagination-btn ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
-                上一页
-            </button>
-        `;
+        <button onclick="changePage(${currentPage - 1})"
+            ${currentPage === 1 ? 'disabled' : ''}
+            class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+            上一页
+        </button>
+    `;
 
         // 页码按钮
         const maxVisiblePages = 5;
@@ -426,21 +493,22 @@
 
         for (let i = startPage; i <= endPage; i++) {
             html += `
-                <button onclick="changePage(${i})"
-                    class="pagination-btn ${i === currentPage ? 'active' : ''}">
-                    ${i}
-                </button>
-            `;
+            <button onclick="changePage(${i})"
+                class="relative inline-flex items-center px-4 py-2 border text-sm font-medium mx-1 rounded-md
+                ${i === currentPage ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}">
+                ${i}
+            </button>
+        `;
         }
 
         // 下一页按钮
         html += `
-            <button onclick="changePage(${currentPage + 1})"
-                ${currentPage === totalPages ? 'disabled' : ''}
-                class="pagination-btn ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
-                下一页
-            </button>
-        `;
+        <button onclick="changePage(${currentPage + 1})"
+            ${currentPage === totalPages ? 'disabled' : ''}
+            class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}">
+            下一页
+        </button>
+    `;
 
         html += `</div>`;
         container.innerHTML = html;
@@ -449,9 +517,7 @@
     // 切换页面
     function changePage(page) {
         const totalPages = Math.ceil(totalArticles / articlesPerPage);
-
         if (page < 1 || page > totalPages) return;
-
         currentPage = page;
         loadSharedArticles(page);
 
