@@ -21,6 +21,9 @@ public class Category {
     @Column(name = "article_count", columnDefinition = "INT DEFAULT 0")
     private Integer articleCount = 0;
 
+    @Column(name = "user_id", nullable = false)  // 新增用户关联字段[1,4](@ref)
+    private Long userId;
+
     @Transient  // 非数据库字段
     private List<Category> children = new ArrayList<>();
 
@@ -70,5 +73,16 @@ public class Category {
             throw new IllegalArgumentException("文章数量不能为负数");
         }
         this.articleCount = articleCount;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new IllegalArgumentException("用户ID无效");
+        }
+        this.userId = userId;
     }
 }
