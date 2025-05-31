@@ -70,8 +70,14 @@ public class User {
     @Column(name = "password", nullable = false, length = 100)
     private String password;
 
-    @Column(unique = true, updatable = false)
-    private String tenantId;
+    @Setter
+    @Column(name = "question", nullable = false, length = 100)
+    private String question;
+
+    @Setter
+    @Column(name = "answer", nullable = false, length = 100)
+    private String answer;
+
 
     public void setNickname(String nickname) {
         this.nickname = nickname.trim(); // 自动去除首尾空格

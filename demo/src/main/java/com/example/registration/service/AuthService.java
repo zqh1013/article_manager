@@ -33,7 +33,8 @@ public class AuthService {
         user.setNickname(request.getNickname());
         user.setEmail(request.getEmail());
         user.setPassword((request.getPassword()));
-
+        user.setQuestion((request.getQuestion()));
+        user.setAnswer(request.getAnswer());
         userRepository.save(user);
     }
 

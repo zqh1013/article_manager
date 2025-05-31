@@ -9,6 +9,8 @@ public class RegisterRequest {
     private String email;
     private String password;
     private String confirmPassword;
+    private String question;
+    private String answer;
 
     @NotBlank(message = "请输入您的称呼")
     @Size(min = 2, max = 20, message = "称呼长度需2-20个字符")
@@ -43,6 +45,18 @@ public class RegisterRequest {
     @NotBlank(message = "请再次输入密码")
     public String getConfirmPassword() {
         return confirmPassword;
+    }
+
+    @NotBlank
+    public String getQuestion(){return question;}
+    public void setQuestion(String question) {
+        this.question = question.trim();
+    }
+
+    @NotBlank
+    public String getAnswer(){return answer;}
+    public void setAnswer(String answer) {
+        this.answer = answer.trim();
     }
 
     public void setConfirmPassword(String confirmPassword) {
