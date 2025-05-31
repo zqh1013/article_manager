@@ -110,11 +110,13 @@
 <script>
     // 从URL获取文章ID
     let email = null;
+    let last_pos = null;
     let currentUserEmail = null;
     let articleId = null;
     function getArticleIdAndUserIdFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
         email = urlParams.get('email') || null;
+        last_pos = urlParams.get('last') || null;
         currentUserEmail = email;
         articleId = urlParams.get('articleId') || null;
         return;
@@ -345,7 +347,7 @@
     });
 
     function returnHtml(){
-        window.location.href = `dashboard.html?email=${currentUserEmail}`;
+        window.location.href = `${last_pos}?email=${currentUserEmail}`;
     }
 </script>
 </body>

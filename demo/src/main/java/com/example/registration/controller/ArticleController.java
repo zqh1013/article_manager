@@ -3,6 +3,7 @@ package com.example.registration.controller;
 import com.example.registration.dto.ArticleCreateRequest;
 import com.example.registration.dto.ArticleViewDTO;
 import com.example.registration.dto.ArticleWithCategoryDTO;
+import com.example.registration.dto.ArticleWithShareDTO;
 import com.example.registration.exception.exception.ResourceNotFoundException;
 import com.example.registration.model.Article;
 import com.example.registration.repository.UserRepository;
@@ -60,6 +61,23 @@ public class ArticleController {
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("createTime").descending());
         // 调用Service获取分页数据
         Page<ArticleWithCategoryDTO> articlePage = articleService.getArticles(pageable, userId);
+        Map<String, Object> responseBody = Map.of(
+                "total", articlePage.getTotalElements(),
+                "data", articlePage.getContent()
+        );
+        return ResponseEntity.ok().body(responseBody);
+    }
+
+    @GetMapping("/shared")
+    public ResponseEntity<?> getSharedArticles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam String email) {
+        Long userId = userRepository.findUserIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("createTime").descending());
+        // 调用Service获取分页数据
+        Page<ArticleWithShareDTO> articlePage = articleService.getSharedArticles(pageable);
         Map<String, Object> responseBody = Map.of(
                 "total", articlePage.getTotalElements(),
                 "data", articlePage.getContent()

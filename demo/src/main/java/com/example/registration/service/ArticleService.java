@@ -1,9 +1,6 @@
 package com.example.registration.service;
 
-import com.example.registration.dto.ArticleCreateRequest;
-import com.example.registration.dto.ArticleViewDTO;
-import com.example.registration.dto.ArticleWithCategoryDTO;
-import com.example.registration.dto.CommentDTO;
+import com.example.registration.dto.*;
 import com.example.registration.exception.exception.EmailNotRegisteredException;
 import com.example.registration.model.Article;
 import com.example.registration.model.Category;
@@ -90,6 +87,11 @@ public class ArticleService {
 //    }
     public Page<ArticleWithCategoryDTO> getArticles(Pageable pageable, Long userId) {
         Page<ArticleWithCategoryDTO> pages =   articleRepository.findArticlesWithCategoryByUserId(userId, pageable);
+        return pages;
+    }
+
+    public Page<ArticleWithShareDTO> getSharedArticles(Pageable pageable) {
+        Page<ArticleWithShareDTO> pages = articleRepository.findPublicArticles(pageable);
         return pages;
     }
 

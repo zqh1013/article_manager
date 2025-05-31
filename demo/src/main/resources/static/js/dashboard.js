@@ -107,7 +107,7 @@ function renderArticles(articles) {
         <div class="card-hover bg-white rounded-lg shadow-md overflow-visible flex flex-col">
             <div class="p-5 flex-grow">
                 <div class="flex justify-between items-start mb-1">
-                    <a href="article_view.html?email=${email}&articleId=${article.id}" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
+                    <a href="article_view.html?email=${email}&articleId=${article.id}&last=dashboard.html" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
                         ${article.title}
                     </a>
                     <div class="relative article-menu">
@@ -636,6 +636,12 @@ function createArticle(){
     window.location.href = `article_editor.html?email=${email}`
 }
 
+//跳转功能
+function jump_shared_articles(){
+    window.location.href = `shared_articles.html?email=${email}`
+}
+
+
 // 初始化
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -669,4 +675,5 @@ menuButton.addEventListener('click', () => {
   const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
   menuButton.setAttribute('aria-expanded', !isExpanded);
   dropdown.style.display = isExpanded ? 'none' : 'block';
+
 });
