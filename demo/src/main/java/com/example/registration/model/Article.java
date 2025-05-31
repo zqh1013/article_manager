@@ -9,16 +9,12 @@ import jakarta.validation.constraints.Size;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.Data;
 
-@Data
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "articles")
 public class Article {
     @Id
@@ -30,8 +26,8 @@ public class Article {
     private String title;
 
     @Setter
-    @Column(name = "category_id")
-    private Long categoryId;
+    @Column(name = "category_name")
+    private String categoryName;
 
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "JSON")
@@ -43,21 +39,29 @@ public class Article {
     private String content;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;  // 关联用户标识
+    private String userId;  // 关联用户标识
 
     @Setter
     @Column(name = "visibility", nullable = false)
     private String visibility;
 
-    @CreatedDate
-    @Column(
-            name = "create_time",
-            nullable = false,
-            updatable = false  // 禁止更新[5,7](@ref)
-    )
-    private LocalDateTime createTime;
+
+    public void setTitle(String title) {
+        this.title = title.trim();
+    }
 
 
+    public void setTags(List<String> tags) {
+        this.tags = (List<String>) tags;
+    }
+
+    public void setContent(Object content) {
+        this.content = content == null ? "" : content.toString();
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId.toString();
+    }
 }
 
 // 列表转换器

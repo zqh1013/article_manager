@@ -21,8 +21,8 @@ public class CategoryService {
     }
 
     //构建树
-    public List<CategoryDTO> getCategoryTree(Long userId) {
-        List<Category> allCategories = categoryRepository.findAllByUserId(userId);
+    public List<CategoryDTO> getCategoryTree() {
+        List<Category> allCategories = categoryRepository.findAllWithOrder();
         return buildTree(null, allCategories);
     }
 
@@ -38,33 +38,32 @@ public class CategoryService {
     }
 
     @Transactional
-    public Category createCategory(Category category,Long userId) {
+    public Category createCategory(Category category) {
         if (category.getParentId() != null) {
             categoryRepository.findById(category.getParentId())
                     .orElseThrow(() -> new RuntimeException("父分类不存在"));
         }
-        category.setUserId(userId);
         return categoryRepository.save(category);
     }
 
     @Transactional
-    public void deleteCategory(Long id,Long userId) {
+    public void deleteCategory(Long id) {
         List<Long> idsToDelete = new ArrayList<>();
-        findChildrenIds(id, idsToDelete,userId);
+        findChildrenIds(id, idsToDelete);
         idsToDelete.add(id);
         categoryRepository.deleteAllById(idsToDelete);
     }
 
-    private void findChildrenIds(Long parentId, List<Long> ids,Long userId) {
-        List<Category> children = categoryRepository.findByParentIdAndUserId(parentId,userId);
+    private void findChildrenIds(Long parentId, List<Long> ids) {
+        List<Category> children = categoryRepository.findByParentId(parentId);
         children.forEach(child -> {
             ids.add(child.getId());
-            findChildrenIds(child.getId(), ids, userId);
+            findChildrenIds(child.getId(), ids);
         });
     }
 
     @Transactional
-    public Category modifyCategory(Category newCategory,Long userId) {
+    public Category modifyCategory(Category newCategory) {
         Long id;
         String newName;
         Long newParentId;
@@ -85,7 +84,7 @@ public class CategoryService {
         // 同一父节点下名称唯一性校验
         if (!newName.equals(category.getName()) ||
                 (newParentId != null && !newParentId.equals(category.getParentId()))) {
-            if (categoryRepository.existsByParentIdAndNameExcludingId(targetParentId, newName, id, userId)) {
+            if (categoryRepository.existsByParentIdAndNameExcludingId(targetParentId, newName, id)) {
                 throw new RuntimeException("同一父分类下名称必须唯一");
             }
         }

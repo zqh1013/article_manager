@@ -1,9 +1,7 @@
 package com.example.registration.controller;
 
 import com.example.registration.dto.CategoryDTO;
-import com.example.registration.exception.exception.ResourceNotFoundException;
 import com.example.registration.model.Category;
-import com.example.registration.repository.UserRepository;
 import com.example.registration.service.CategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,46 +12,33 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
-    private final UserRepository userRepository;
     private final CategoryService categoryService;
-    public CategoryController(CategoryService categoryService,UserRepository userRepository) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
-        this.userRepository = userRepository;
     }
 
     // 获取分类树形结构
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getCategories(@RequestParam String email) {
-        Long userId = userRepository.findUserIdByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
-        return ResponseEntity.ok(categoryService.getCategoryTree(userId));
+    public ResponseEntity<List<CategoryDTO>> getCategories() {
+        return ResponseEntity.ok(categoryService.getCategoryTree());
     }
 
     // 创建分类
     @PostMapping("/add")
-    public ResponseEntity<Category> createCategory(@RequestParam String email,
-                                                   @RequestBody Category category) {
-        Long userId = userRepository.findUserIdByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(categoryService.createCategory(category,userId));
+                .body(categoryService.createCategory(category));
     }
     @PostMapping("/modify")
-    public ResponseEntity<Category> modifyCategory(@RequestParam String email,
-                                                   @RequestBody Category category) {
-        Long userId = userRepository.findUserIdByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
+    public ResponseEntity<Category> modifyCategory(@RequestBody Category category) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(categoryService.modifyCategory(category,userId));
+                .body(categoryService.modifyCategory(category));
     }
 
     // 删除分类
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@RequestParam String email,
-                                               @PathVariable Long id) {
-        Long userId = userRepository.findUserIdByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
-        categoryService.deleteCategory(id,userId);
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 

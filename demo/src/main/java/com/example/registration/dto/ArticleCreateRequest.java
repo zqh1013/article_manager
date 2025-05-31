@@ -17,7 +17,7 @@ public class ArticleCreateRequest {
 
     @NotBlank(message = "必须有分类标签")
     @Size(min = 1, max = 50, message = "分类名称最长50个字符")
-    private Long categoryId;
+    private String categoryId;
 
     @Size(max = 5, message = "最多添加5个标签")
     private List<@Size(max = 15, message = "单个标签最长15字符") String> tags;
@@ -37,11 +37,11 @@ public class ArticleCreateRequest {
         this.title = title;
     }
 
-    public Long getCategoryId() {
+    public String getCategoryId() {
         return categoryId;
     }
 
-    public void setCategoryId(Long categoryId) {
+    public void setCategoryId(String categoryId) {
         this.categoryId = categoryId;
     }
 
