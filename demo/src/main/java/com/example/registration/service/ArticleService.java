@@ -14,10 +14,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -69,22 +73,10 @@ public class ArticleService {
 
 
     // 新增分页查询方法
-//    public Page<Article> getArticles(Pageable pageable, String title, String author) {
-//        // 示例实现 - 根据你的实际数据访问层调整
-//        if (title != null && author != null) {
-//            return articleRepository.findByTitleContainingAndAuthorContaining(title, author, pageable);
-//        } else if (title != null) {
-//            return articleRepository.findByTitleContaining(title, pageable);
-//        } else if (author != null) {
-//            return articleRepository.findByAuthorContaining(author, pageable);
-//        } else {
-//            return articleRepository.findAll(pageable);
-//        }
+//    public Page<ArticleWithCategoryDTO> getArticles(Pageable pageable, Long userId) {
+//        Page<ArticleWithCategoryDTO> pages =   articleRepository.findArticlesWithCategoryByUserId(userId, pageable);
+//        return pages;
 //    }
-    public Page<ArticleWithCategoryDTO> getArticles(Pageable pageable, Long userId) {
-        Page<ArticleWithCategoryDTO> pages =   articleRepository.findArticlesWithCategoryByUserId(userId, pageable);
-        return pages;
-    }
 
     public Article getArticle(Long articleId){
         Article article = articleRepository.findById(articleId)
@@ -93,6 +85,25 @@ public class ArticleService {
         return article;
     }
 
+
+public Page<ArticleWithCategoryDTO> getArticlesWithConditions(
+        Pageable pageable, Long userId, String tags,
+        Long category, LocalDate startDate, LocalDate endDate) {
+
+        // 转换参数格式
+        String tagsJson = null;
+        if (StringUtils.hasText(tags)) {
+            List<String> tagList = Arrays.asList(tags.split(","));
+            tagsJson = "[\"" + String.join("\",\"", tagList) + "\"]"; // 格式示例: ["tag1","tag2"]
+        }
+        LocalDateTime startDateTime = startDate != null ? startDate.atStartOfDay() : null;
+        LocalDateTime endDateTime = endDate != null ? endDate.plusDays(1).atStartOfDay() : null;
+
+        // 查询
+        return articleRepository.findArticlesWithConditions(
+                        userId, tagsJson, category,    // tags和tagList都传给repository层
+                        startDateTime, endDateTime, pageable);
+}
 
     public Article modifyArticle(Long userId, Long articleId, Long lastCategoryId, ArticleCreateRequest request){
         List<String> processedTags = request.getTags().stream()

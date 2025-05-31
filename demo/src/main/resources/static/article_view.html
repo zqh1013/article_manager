@@ -243,7 +243,7 @@
             alert('评论发表成功！');
             updateCommentCount();
         }
-        
+
         function updateCommentCount() {
             const count = document.querySelectorAll('#commentsList .comment-item').length;
             document.getElementById('commentCount').textContent = count;

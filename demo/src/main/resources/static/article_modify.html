@@ -316,10 +316,7 @@
     });
     if (!response2.ok) alert("内容获得失败，请稍后再试");
     const article = await response2.json();
-    alert(99)
-    alert(article.data.title)
     if (article) {
-      alert(100)
       document.querySelector('input[id="title"]').value = article.data.title;
       document.querySelector('.editor-content').innerHTML = article.data.content;
       document.querySelector(`input[name="visibility"][value="${article.data.visibility}"]`).checked = true;
