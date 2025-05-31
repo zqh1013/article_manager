@@ -18,4 +18,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     boolean existsByNickname(String nickname);
 
+    @Query("SELECT u.nickname FROM User u WHERE lower(u.email) = lower(:email)")
+    Optional<String> findNicknameByEmail(@Param("email") String email);
+
+    @Query("SELECT u.nickname FROM User u WHERE u.id = :id")
+    Optional<String> findNicknameById(@Param("id") Long id);
+
+    @Query("SELECT u.email FROM User u WHERE u.id = :id")
+    Optional<String> findEmailById(@Param("id") Long id);
 }

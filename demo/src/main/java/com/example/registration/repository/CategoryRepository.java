@@ -56,4 +56,10 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             @Param("excludeId") Long excludeId,
             @Param("userId") Long userId  // 新增参数
     );
+
+    @Query("SELECT c.name FROM Category c " +
+            "WHERE c.id = :id ")
+    Optional<String> findNameById(
+            @Param("id") Long id
+    );
 }
