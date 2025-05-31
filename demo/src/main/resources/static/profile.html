@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人资料 - 文章管理器</title>
+  <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style> body { font-family: 'Inter', 'Noto Sans SC', sans-serif; background-color: #f8fafc; } </style>
+</head>
+<body class="min-h-screen">
+<!-- Navbar -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <a href="dashboard.html" class="flex-shrink-0 flex items-center text-indigo-600 hover:text-indigo-700">
+          <i class="fas fa-arrow-left mr-3"></i>
+          <i class="fas fa-book-open text-2xl mr-2"></i>
+          <span class="text-xl font-semibold text-gray-800">文章管理器</span>
+        </a>
+      </div>
+      <div class="flex items-center">
+        <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto p-6 space-y-8">
+  <h1 class="text-3xl font-bold text-gray-800 mb-6">个人中心</h1>
+
+  <!-- Personal Information Section (Story 5) -->
+  <section class="bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">个人信息</h2>
+    <form id="profileForm" class="space-y-6">
+      <div class="flex flex-col items-center sm:flex-row sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
+        <div class="relative">
+          <img id="avatarPreview" class="h-24 w-24 rounded-full object-cover" src="https://randomuser.me/api/portraits/women/44.jpg" alt="当前头像">
+          <label for="avatarUpload" class="absolute bottom-0 right-0 bg-indigo-600 text-white p-1.5 rounded-full cursor-pointer hover:bg-indigo-700 shadow">
+            <i class="fas fa-camera text-xs"></i>
+            <input type="file" id="avatarUpload" class="hidden" accept="image/*" onchange="previewAvatar(event)">
+          </label>
+        </div>
+        <div class="flex-1 w-full">
+          <div>
+            <label for="nickname" class="block text-sm font-medium text-gray-700">昵称</label>
+            <input type="text" id="nickname" name="nickname"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+          </div>
+          <div class="mt-4">
+            <label for="email_display" class="block text-sm font-medium text-gray-700">邮箱 (不可修改)</label>
+            <input type="email" id="email_display" name="email_display" readonly
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-100 text-gray-500 sm:text-sm cursor-not-allowed">
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <button onclick="saveNickname()" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium">
+          <i class="fas fa-save mr-2"></i>保存信息
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Change Password Section (Story 5) -->
+  <section class="bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">修改密码</h2>
+    <form id="passwordForm" class="space-y-4">
+      <div>
+        <label for="currentPassword" class="block text-sm font-medium text-gray-700">当前密码</label>
+        <input type="password" id="currentPassword" name="currentPassword" required
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      </div>
+      <div>
+        <label for="newPassword" class="block text-sm font-medium text-gray-700">新密码</label>
+        <input type="password" id="newPassword" name="newPassword" required placeholder="至少8位字符"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      </div>
+      <div>
+        <label for="confirmNewPassword" class="block text-sm font-medium text-gray-700">确认新密码</label>
+        <input type="password" id="confirmNewPassword" name="confirmNewPassword" required
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+      </div>
+      <div class="text-right">
+        <button onclick="updatePassword()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+          <i class="fas fa-key mr-2"></i>更新密码
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Data Export Section (Story 19) -->
+  <section class="bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">数据导出</h2>
+    <p class="text-sm text-gray-600 mb-4">您可以将您的所有文章数据导出为常见的格式，以作备份或迁移。</p>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <button onclick="exportData('json')" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium flex items-center justify-center">
+        <i class="fas fa-file-code mr-2"></i>导出为 JSON
+      </button>
+      <button onclick="exportData('markdown')" class="flex-1 px-4 py-2.5 bg-gray-700 text-white rounded-md hover:bg-gray-800 text-sm font-medium flex items-center justify-center">
+        <i class="fab fa-markdown mr-2"></i>导出为 Markdown (压缩包)
+      </button>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-white border-t border-gray-200 py-6 mt-8">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+    © 2024 文章管理器. All rights reserved.
+  </div>
+</footer>
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const email = localStorage.getItem('userEmail');
+    const response = await fetch(`/api/user/info?email=${encodeURIComponent(email)}`);
+    const { status, data } = await response.json();
+    document.getElementById('nickname').value = data.nickname;
+    document.getElementById('email_display').value = data.email;
+  });
+
+  async function saveNickname() {
+    const email = localStorage.getItem('userEmail');
+    const newNickname = document.getElementById('nickname').value.trim();
+    if (!newNickname) {
+      alert('用户名不能为空');
+    }
+    const response = await fetch(`/api/user/update-nickname?email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        newNickname: newNickname
+      })
+    });
+
+    if (response.ok) {
+      alert("用户名修改成功");
+      window.location.reload();
+    }
+  }
+
+  async function updatePassword() {
+    const email = localStorage.getItem('userEmail');
+    const oldPass = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmNewPassword').value;
+    if (newPass !== confirmPass) {
+      alert('新密码与确认密码不匹配！');
+    }
+    if (newPass.length < 8) {
+      alert('新密码长度至少需要8位！');
+    }
+
+    const response = await fetch(`/api/user/change-password?email=${encodeURIComponent(email)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        oldPassword: oldPass,
+        newPassword: newPass,
+        confirmPassword: confirmPass
+      })
+    });
+    if (response.ok) {
+      alert("密码修改成功");
+      window.location.reload();
+    }
+  }
+
+
+
+  function previewAvatar(event) {
+    const reader = new FileReader();
+    reader.onload = function(){
+      const output = document.getElementById('avatarPreview');
+      output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+    alert("头像预览已更新 (本地)。实际上传需后端处理。");
+  }
+
+
+  function exportData(format) {
+    alert(`正在准备导出为 ${format.toUpperCase()} 格式... (模拟下载)`);
+    // In a real app, this would trigger a download from the server.
+    // For JSON, you might generate a blob and create a download link.
+    // For Markdown, it would likely be a zip file.
+    if (format === 'json') {
+      const jsonData = { user: 'jane@example.com', articles: [{title: 'My first post', content: '...'}] };
+      const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `my_articles_backup.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else if (format === 'markdown') {
+      // Simulate zip download
+      alert('Markdown (ZIP) 文件下载已开始（模拟）。');
+    }
+  }
+</script>
+</body>
+</html>
