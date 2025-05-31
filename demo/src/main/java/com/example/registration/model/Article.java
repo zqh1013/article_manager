@@ -1,5 +1,6 @@
 package com.example.registration.model;
 
+import com.example.registration.dto.ArticleWithCategoryDTO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import lombok.Data;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "articles")
+
 public class Article {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

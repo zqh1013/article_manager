@@ -11,10 +11,12 @@ import com.example.registration.service.ArticleService;
 import jakarta.validation.Valid;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 
@@ -49,18 +51,24 @@ public class ArticleController {
     }
 
     // 新增分页查询API
-    @GetMapping
+    @GetMapping("/get_articles")
     public ResponseEntity<?> getArticles(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int limit,
-            @RequestParam String email) {
+            @RequestParam String email,
+            // 新增筛选参数（均为可选）
+            @RequestParam(required = false) String tags,
+            @RequestParam(required = false) Long category,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
         Long userId = userRepository.findUserIdByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
         // 创建分页请求 (page从1开始计数)
-//        Pageable pageable = PageRequest.of(page - 1, limit);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("createTime").descending());
+
         // 调用Service获取分页数据
-        Page<ArticleWithCategoryDTO> articlePage = articleService.getArticles(pageable, userId);
+        Page<ArticleWithCategoryDTO> articlePage = articleService.getArticlesWithConditions(pageable, userId, tags, category, startDate, endDate);
+
         Map<String, Object> responseBody = Map.of(
                 "total", articlePage.getTotalElements(),
                 "data", articlePage.getContent()

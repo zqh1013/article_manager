@@ -4,7 +4,7 @@ let currentPage = 1;
 const articlesPerPage = 9; // 每页显示9篇文章（3x3网格）
 let totalArticles = 0;
 let currentFilter = {
-    keyword: '',
+    tags: '',
     category: '',
     startDate: '',
     endDate: ''
@@ -29,15 +29,22 @@ async function loadArticles(page) {
             email: email
         });
 
+        // 添加筛选条件（仅添加非空字段）
+        if (currentFilter.tags) params.append('tags', currentFilter.tags);
+        if (currentFilter.category) params.append('category', currentFilter.category);
+        if (currentFilter.startDate) params.append('startDate', currentFilter.startDate);
+        if (currentFilter.endDate) params.append('endDate', currentFilter.endDate);
+
         // API请求-从数据库加载文章来填充文章列表
         try {
-            const response = await fetch(`/api/articles?${params.toString()}`);
+            const response = await fetch(`/api/articles/get_articles?${params.toString()}`);
             if (!response.ok) {
                 alert(response.status)
                 throw new Error(`API请求失败: ${response.status}`);
             }
             pageData = await response.json();
         } catch (error) {
+
             console.error('获取文章数据失败:', error);
             const data = {
                 total: 0,
@@ -46,17 +53,13 @@ async function loadArticles(page) {
                 data: []
             };
         }
-
         // 更新全局变量
         totalArticles = pageData.total;
         currentPage = page;
-
         // 渲染文章列表
         renderArticles(pageData.data);
-
         // 渲染分页组件
         renderPagination();
-
     } catch (error) {
         console.error('加载文章失败:', error);
         document.getElementById('articleListContainer').innerHTML = `
@@ -221,13 +224,49 @@ function changePage(page) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 检索处的分类框
+async function populateFilterCategories() {
+    const categorySelect = document.getElementById('filter-category');
+    try {
+        const response = await fetch(`/api/categories?email=${encodeURIComponent(email)}`);
+        if (!response.ok) alert("分类获取失败");
+
+        const categories = await response.json();
+
+        const fragment = document.createDocumentFragment();
+
+        const buildOptions = (items, level = 0) => {
+            items.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = ' '.repeat(level * 2) + cat.name; // 缩进优化
+                fragment.appendChild(option); // 统一在此添加节点
+
+                // 递归处理子分类
+                if (cat.children?.length) {
+                    buildOptions(cat.children, level + 1);
+                }
+            });
+        };
+
+        buildOptions(categories);  // 传入顶级分类
+
+        // 将构建好的选项添加到下拉框
+        categorySelect.appendChild(fragment);
+
+    } catch (error) {
+        console.error('加载失败:', error);
+        categorySelect.innerHTML = '<option value="">加载失败</option>';
+    }
+}
+
 // 应用筛选条件
 function applyFilters() {
     currentFilter = {
-        keyword: document.getElementById('filter-keyword').value,
-        category: document.getElementById('filter-category').value,
-        startDate: document.getElementById('filter-date-start').value,
-        endDate: document.getElementById('filter-date-end').value
+        tags: document.getElementById('filter-tags').value || null,
+        category: document.getElementById('filter-category').value || null,
+        startDate: document.getElementById('filter-date-start').value || null,
+        endDate: document.getElementById('filter-date-end').value || null
     };
 
     // 重置到第一页
@@ -237,13 +276,13 @@ function applyFilters() {
 
 // 重置筛选条件
 function resetFilters() {
-    document.getElementById('filter-keyword').value = '';
+    document.getElementById('filter-tags').value = '';
     document.getElementById('filter-category').value = '';
     document.getElementById('filter-date-start').value = '';
     document.getElementById('filter-date-end').value = '';
 
     currentFilter = {
-        keyword: '',
+        tags: '',
         category: '',
         startDate: '',
         endDate: ''
@@ -252,6 +291,20 @@ function resetFilters() {
     // 重置到第一页
     currentPage = 1;
     loadArticles(currentPage);
+}
+
+function initFilterButtons() {
+    // 筛选按钮点击事件
+    const applyBtn = document.getElementById('apply-filters-btn');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', applyFilters);
+    }
+
+    // 重置按钮点击事件
+    const resetBtn = document.getElementById('reset-filters-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', resetFilters);
+    }
 }
 
 // 删除文章
@@ -263,11 +316,6 @@ async function deleteArticle(articleId) {
 
          await loadCategories();
 
-        // 模拟删除成功
-//        setTimeout(() => {
-//            alert(`文章 #${articleId} 已删除`);
-//            loadArticles(currentPage);
-//        }, 500);
     }
 }
 
@@ -652,11 +700,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }else {
         alert(email);
         loadCategories();
+        populateFilterCategories();
 
         loadArticles(currentPage);
         // 设置筛选按钮事件
-        document.getElementById('applyFilterBtn').addEventListener('click', applyFilters);
-        document.getElementById('resetFilterBtn').addEventListener('click', resetFilters);
+        initFilterButtons();
+
     }
 });
 
