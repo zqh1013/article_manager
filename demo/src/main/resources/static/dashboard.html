@@ -23,7 +23,7 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Enhanced shadow */
         }
-        .dropdown-menu {
+        .user-dropdown-menu {
             display: none;
             position: absolute;
             background-color: white;
@@ -32,7 +32,7 @@
             z-index: 10;
             border-radius: 0.375rem; /* rounded-md */
         }
-        .user-menu-button:focus + .dropdown-menu, .dropdown-menu:hover {
+        .user-menu-button:focus + .user-dropdown-menu, .user-dropdown-menu:hover {
             display: block;
         }
 
@@ -68,8 +68,7 @@
                     <span class="text-xl font-semibold text-gray-800">文章管理器</span>
                 </div>
                 <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                    <a href="dashboard.html" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">仪表盘</a>
-                    <a href="javascript:alert('功能：筛选显示我的文章')" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">我的文章</a>
+                    <a href="dashboard.html" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">我的文章</a>
                     <a href="javascript:alert('功能：筛选显示共享文章')" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">共享文章</a>
                     <a href="statistics.html" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">统计分析</a>
                 </div>
@@ -94,7 +93,7 @@
                             <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
                         </button>
                     </div>
-                    <div class="dropdown-menu origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                    <div class="user-dropdown-menu origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                         <a href="profile.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">个人资料</a>
                         <a href="javascript:alert('功能：内容导出开始...')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">内容导出</a>
                         <a href="login.html" onclick="alert('已登出')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">退出登录</a>
@@ -110,11 +109,11 @@
         </div>
     </div>
 
-    <!-- 移动端菜单 -->
+    <!--     移动端菜单-->
     <div class="sm:hidden hidden" id="mobile-menu">
         <div class="pt-2 pb-3 space-y-1">
             <a href="dashboard.html" class="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">仪表盘</a>
-            <a href="javascript:alert('功能：筛选显示我的文章')" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">我的文章</a>
+            <!--            <a href="javascript:alert('功能：筛选显示我的文章')" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">我的文章</a>-->
             <a href="javascript:alert('功能：筛选显示共享文章')" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">共享文章</a>
             <a href="statistics.html" class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">统计分析</a>
         </div>
@@ -142,7 +141,7 @@
     <!-- 侧边栏 -->
     <aside class="sidebar w-64 bg-white shadow-lg hidden md:block h-screen sticky top-16 overflow-y-auto p-4 space-y-6">
         <div>
-            <a href="article_editor.html" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center text-sm font-medium">
+            <a href="javascript:createArticle();" class="w-full bg-indigo-600 text-white py-2.5 px-4 rounded-md hover:bg-indigo-700 flex items-center justify-center text-sm font-medium">
                 <i class="fas fa-plus mr-2"></i> 新建文章
             </a>
         </div>
@@ -185,6 +184,7 @@
                     <label for="filter-category" class="block text-sm font-medium text-gray-700">分类</label>
                     <select id="filter-category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 text-sm py-2">
                         <option value="">所有分类</option>
+                        <!--TODO-->
                         <option value="cat1">工作文档</option>
                         <option value="cat2">学习笔记</option>
                     </select>
@@ -209,85 +209,20 @@
 
         <!-- 文章列表 -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articleListContainer">
-            <!-- Article Card Example 1 -->
-            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-                <div class="p-5 flex-grow">
-                    <div class="flex justify-between items-start mb-1">
-                        <a href="article_view.html?id=1" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">如何提高写作效率并保持创造力</a>
-                        <div class="relative article-menu">
-                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">
-                                <a href="article_editor.html?id=1" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-edit w-4 mr-2"></i>编辑</a>
-                                <a href="javascript:void(0);" onclick="if(confirm('确定删除这篇文章吗？')) alert('文章已删除');" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-trash w-4 mr-2"></i>删除</a>
-                                <a href="javascript:alert('功能：移动文章到其他分类')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-folder-tree w-4 mr-2"></i>移动分类</a>
-                                <a href="javascript:alert('功能：文章已设为公开共享')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-share-alt w-4 mr-2"></i>设为共享</a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">分享一些提高写作效率的技巧和方法，包括时间管理、工具选择、灵感捕捉以及如何克服写作障碍，让你在繁忙中也能持续产出高质量内容。</p>
-                </div>
-                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
-                    <div class="flex items-center justify-between text-xs text-gray-500">
-                        <div>
-                            <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">学习笔记</span>
-                            <span class="ml-2"><i class="fas fa-lock mr-1"></i> 私密</span>
-                        </div>
-                        <span>2024-03-15</span>
-                    </div>
-                </div>
+            <!-- 动态加载的文章卡片将显示在这里 -->
+            <div id="loadingIndicator" class="col-span-3 flex justify-center py-12">
+                <div class="loading-spinner"></div>
+                <p class="ml-4 text-gray-600">正在加载文章数据...</p>
             </div>
-
-            <!-- Article Card Example 2 (Shared) -->
-            <div class="card-hover bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-                <div class="p-5 flex-grow">
-                    <div class="flex justify-between items-start mb-1">
-                        <a href="article_view.html?id=2" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">项目Alpha第一季度进度报告</a>
-                        <div class="relative article-menu">
-                            <button class="text-gray-400 hover:text-gray-600 focus:outline-none p-1 -mr-1 article-menu-button">
-                                <i class="fas fa-ellipsis-v"></i>
-                            </button>
-                            <div class="dropdown-menu hidden origin-top-right right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-20">
-                                <a href="article_editor.html?id=2" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-edit w-4 mr-2"></i>编辑</a>
-                                <a href="javascript:void(0);" onclick="if(confirm('确定删除这篇文章吗？')) alert('文章已删除');" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-trash w-4 mr-2"></i>删除</a>
-                                <a href="javascript:alert('功能：移动文章到其他分类')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-folder-tree w-4 mr-2"></i>移动分类</a>
-                                <a href="javascript:alert('功能：文章已设为私密')" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-lock w-4 mr-2"></i>设为私密</a>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">详细汇总了项目Alpha在第一季度的主要进展、遇到的挑战及解决方案，并对下一阶段的目标和计划进行了展望。</p>
-                </div>
-                <div class="bg-gray-50 px-5 py-3 border-t border-gray-100">
-                    <div class="flex items-center justify-between text-xs text-gray-500">
-                        <div>
-                            <span class="bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">项目资料</span>
-                            <span class="ml-2 text-green-600"><i class="fas fa-globe-asia mr-1"></i> 公开共享</span>
-                        </div>
-                        <span>2024-03-10</span>
-                    </div>
-                </div>
-            </div>
-            <!-- Add more cards as needed -->
         </div>
         <!-- Pagination -->
-        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg shadow mt-6" aria-label="Pagination">
-            <div class="hidden sm:block">
-                <p class="text-sm text-gray-700">
-                    显示第 <span class="font-medium">1</span> 到 <span class="font-medium">10</span> 条，共 <span class="font-medium">97</span> 条结果
-                </p>
-            </div>
-            <div class="flex-1 flex justify-between sm:justify-end">
-                <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    上一页
-                </a>
-                <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    下一页
-                </a>
-            </div>
+        <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 rounded-lg shadow mt-6" aria-label="Pagination" id="paginationContainer">
+            <!-- 分页内容将通过JavaScript动态生成 -->
         </nav>
+
     </main>
 </div>
+
 
 <!-- 分类管理模态框 -->
 <div id="categoryModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
@@ -351,22 +286,14 @@
         icon.classList.toggle('fa-times');
     });
 
-    // 用户菜单下拉 (simple version for prototype)
-    // A more robust solution would handle outside clicks
-    document.querySelectorAll('.user-menu-button').forEach(button => {
-        button.addEventListener('click', function(event) {
-            const dropdown = this.nextElementSibling;
-            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-            event.stopPropagation();
-        });
+    const menuButton = document.getElementById('user-menu-button');
+    const dropdown = document.querySelector('.user-dropdown-menu');
+    menuButton.addEventListener('click', () => {
+        const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+        menuButton.setAttribute('aria-expanded', !isExpanded);
+        dropdown.style.display = isExpanded ? 'none' : 'block';
     });
-    document.addEventListener('click', function(event) {
-        document.querySelectorAll('.user-menu .dropdown-menu').forEach(menu => {
-            if (!menu.parentElement.contains(event.target)) {
-                menu.style.display = 'none';
-            }
-        });
-    });
+
 
     // 文章卡片菜单下拉
     document.querySelectorAll('.article-menu-button').forEach(button => {
@@ -644,6 +571,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadCategories();
         renderCategoryTreeList('categoryList', categories);
+
     });
     // Simulate admin link visibility
     const isAdmin = true; // Change this to false to hide admin link

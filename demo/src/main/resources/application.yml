@@ -7,7 +7,7 @@ spring:
         driver-class-name: com.mysql.jdbc.Driver  #数据库链接驱动
         hikari:
             maximum-pool-size: 10
-            connection-timeout: 30000
+            connection-timeout: 60000
 
     jpa:
         hibernate:
