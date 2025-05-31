@@ -1,6 +1,7 @@
 package com.example.registration.controller;
 
 import com.example.registration.dto.ArticleCreateRequest;
+import com.example.registration.dto.ArticleViewDTO;
 import com.example.registration.dto.ArticleWithCategoryDTO;
 import com.example.registration.exception.exception.ResourceNotFoundException;
 import com.example.registration.model.Article;
@@ -98,6 +99,15 @@ public class ArticleController {
         } catch (EmptyResultDataAccessException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("文章不存在");
         }
+    }
+    @GetMapping("/article_view")
+    public ResponseEntity<?> getArticleView(@RequestParam String email,
+                                            @RequestParam Long articleId) {
+        ArticleViewDTO article = articleService.getArticleView(email,articleId);
+        return ResponseEntity.ok().body(Map.of(
+                "success", true,
+                "data", article
+        ));
     }
 
 }
