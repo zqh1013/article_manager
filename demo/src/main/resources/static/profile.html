@@ -56,7 +56,7 @@
         </div>
       </div>
       <div class="text-right">
-        <button onclick="saveNickname()" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium">
+        <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium">
           <i class="fas fa-save mr-2"></i>保存信息
         </button>
       </div>
@@ -83,7 +83,7 @@
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
       </div>
       <div class="text-right">
-        <button onclick="updatePassword()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+        <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
           <i class="fas fa-key mr-2"></i>更新密码
         </button>
       </div>
@@ -114,15 +114,16 @@
 <script>
 
   document.addEventListener('DOMContentLoaded', async () => {
-    const email = localStorage.getItem('userEmail');
+    const urlParams = new URLSearchParams(window.location.search);
+    email = urlParams.get('email');
     const response = await fetch(`/api/user/info?email=${encodeURIComponent(email)}`);
     const { status, data } = await response.json();
     document.getElementById('nickname').value = data.nickname;
     document.getElementById('email_display').value = data.email;
   });
 
-  async function saveNickname() {
-    const email = localStorage.getItem('userEmail');
+  document.getElementById('profileForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
     const newNickname = document.getElementById('nickname').value.trim();
     if (!newNickname) {
       alert('用户名不能为空');
@@ -134,15 +135,14 @@
         newNickname: newNickname
       })
     });
-
-    if (response.ok) {
+    if(response.ok){
       alert("用户名修改成功");
       window.location.reload();
     }
-  }
+  });
 
-  async function updatePassword() {
-    const email = localStorage.getItem('userEmail');
+  document.getElementById('passwordForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
     const oldPass = document.getElementById('currentPassword').value;
     const newPass = document.getElementById('newPassword').value;
     const confirmPass = document.getElementById('confirmNewPassword').value;
@@ -162,11 +162,12 @@
         confirmPassword: confirmPass
       })
     });
-    if (response.ok) {
+    if(response.ok){
       alert("密码修改成功");
       window.location.reload();
     }
-  }
+
+  });
 
 
 

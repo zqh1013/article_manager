@@ -135,7 +135,7 @@
   <form id="articleForm">
     <!-- 头部 -->
     <div class="header">
-      <h1>新建文章</h1>
+      <h1>文章编辑</h1>
       <div class="button-group">
         <button type="button" class="btn btn-draft">保存草稿</button>
         <button type="submit" class="btn btn-publish">发布文章</button>
@@ -209,6 +209,8 @@
 
 <script>
   let email = null;
+  let articleId = null;
+  let lastCategoryId = null;
   // 标签管理逻辑
   const tagsInput = document.querySelector('.tags-input');
   const tagInput = tagsInput.querySelector('input');
@@ -251,20 +253,19 @@
       visibility: checkedRadio.value.trim()
     };
 
-    const response = await fetch(`/api/articles/article_editor?email=${encodeURIComponent(email)}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData)
+    const response = await fetch(`/api/articles/article_editor/modify?email=${encodeURIComponent(email)}&articleId=${encodeURIComponent(articleId)}&lastCategoryId=${encodeURIComponent(lastCategoryId)}`,{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
     });
 
     const data = await response.json();
     if (response.ok) {
-      alert("文章创建成功");
+      alert("文章修改成功");
       window.location.href = `dashboard.html?email=${email}`; // 跳转到列表页
     } else {
-      alert(1)
       alert(data.message); // 显示错误提示
     }
    });
@@ -272,14 +273,20 @@
   window.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     email = urlParams.get('email') || null;
+    articleId = urlParams.get('articleId') || null;
     if (!email) {
       alert("请先登录");
       window.location.href = 'login.html';
       return;
     }
+    if (!articleId) {
+      alert("文章ID不能为空");
+      window.location.href = `hashboard.html?email=${encodeURIComponent(email)}`;
+      return;
+    }
     const select = document.getElementById('categorySelect');
     const response = await fetch(`/api/categories?email=${encodeURIComponent(email)}`);
-    if (!response.ok) alert("1")
+    if (!response.ok) alert("分类获得失败，请稍后再试");
     const categories = await response.json();
     const fragment = document.createDocumentFragment();
 
@@ -300,6 +307,35 @@
 
     buildOptions(categories);
     select.appendChild(fragment);
+
+    const response2 = await fetch(`/api/articles/article_editor?articleId=${encodeURIComponent(articleId)}`,{
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+    if (!response2.ok) alert("内容获得失败，请稍后再试");
+    const article = await response2.json();
+    alert(99)
+    alert(article.data.title)
+    if (article) {
+      alert(100)
+      document.querySelector('input[id="title"]').value = article.data.title;
+      document.querySelector('.editor-content').innerHTML = article.data.content;
+      document.querySelector(`input[name="visibility"][value="${article.data.visibility}"]`).checked = true;
+
+      // 设置分类选择
+      const categorySelect = document.getElementById('categorySelect');
+      categorySelect.value = article.data.categoryId || '';
+      lastCategoryId = article.data.categoryId || '';
+      // 设置标签
+      article.data.tags.forEach(tag => {
+        const tagDiv = document.createElement('div');
+        tagDiv.className = 'tag';
+        tagDiv.innerHTML = `<span>${tag}</span><span class="tag-remove">×</span>`;
+        tagsInput.insertBefore(tagDiv, tagInput);
+      });
+    }
   });
 </script>
 </body>
