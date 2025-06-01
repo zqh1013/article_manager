@@ -739,12 +739,10 @@ function html_search(){
     document.getElementById('search').value = '';
 }
 async function fullTextSearch(text,page){
-    alert(2)
     if (!text || text.trim() === '') {
         alert('搜索文本为空');
         return; // 直接退出函数
     }
-    alert(1);
     is_full_search = true;
     currentText = text;
     try {
