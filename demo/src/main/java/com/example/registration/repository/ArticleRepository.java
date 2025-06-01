@@ -1,6 +1,7 @@
 package com.example.registration.repository;
 
 import com.example.registration.dto.ArticleWithCategoryDTO;
+import com.example.registration.dto.ArticleWithSearchDTO;
 import com.example.registration.dto.ArticleWithShareDTO;
 import com.example.registration.model.Article;
 import com.example.registration.model.Category;
@@ -54,4 +55,54 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 
 
     Optional<Article> findById(@Param("id") Long id);
+
+    // 全文搜索方法
+    @Query(value = """
+        SELECT 
+            a.id AS id,
+            a.title AS title,
+            a.category_id AS categoryId,
+            a.visibility AS visibility,
+            a.create_time AS createTime,
+            c.name AS categoryName
+        FROM articles a
+        LEFT JOIN categories c ON a.category_id = c.id AND a.user_id = c.user_id
+        WHERE a.user_id = :userId
+        AND MATCH(a.content) AGAINST(:text IN BOOLEAN MODE)
+        """,
+            countQuery = """
+        SELECT COUNT(a.id) 
+        FROM articles a
+        WHERE a.user_id = :userId
+        AND MATCH(a.content) AGAINST(:text IN BOOLEAN MODE)
+        """,
+            nativeQuery = true)
+    Page<ArticleWithSearchDTO> findArticlesByContent(
+            @Param("userId") Long userId,
+            @Param("text") String text,
+            Pageable pageable);
+//    @Query(value = """
+//    SELECT
+//        a.id,
+//        a.title,
+//        a.category_id,
+//        a.visibility,
+//        a.create_time,
+//        c.name
+//    FROM articles a
+//    LEFT JOIN categories c ON a.category_id = c.id AND a.user_id = c.user_id
+//    WHERE a.user_id = :userId
+//    AND MATCH(a.content) AGAINST(:text IN BOOLEAN MODE)
+//    """,
+//            countQuery = """
+//    SELECT COUNT(a.id)
+//    FROM articles a
+//    WHERE a.user_id = :userId
+//    AND MATCH(a.content) AGAINST(:text IN BOOLEAN MODE)
+//    """,
+//            nativeQuery = true)
+//    Page<ArticleWithSearchDTO> findArticlesByContent(
+//            @Param("userId") Long userId,
+//            @Param("text") String text,
+//            Pageable pageable);
 }

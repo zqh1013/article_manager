@@ -79,9 +79,14 @@
                     <label for="search" class="sr-only">搜索文章</label>
                     <div class="relative">
                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <i class="fas fa-search text-gray-400"></i>
+                            <i class="fas fa-link text-gray-400"></i>
                         </div>
-                        <input id="search" name="search" class="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm" placeholder="全文检索..." type="search" onkeypress="if(event.key === 'Enter') alert('执行全文检索: ' + this.value)">
+                        <input id="search" name="search" class="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 focus:border-indigo-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm" placeholder="全文检索..." type="search" onkeypress="if(event.key === 'Enter') html_search()">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                            <button onclick="html_search()" class="text-indigo-600 hover:text-indigo-800">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

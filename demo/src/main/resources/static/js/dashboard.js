@@ -56,6 +56,8 @@ async function loadArticles(page) {
         // 更新全局变量
         totalArticles = pageData.total;
         currentPage = page;
+        is_full_search = false;
+        currentText = null;
         // 渲染文章列表
         renderArticles(pageData.data);
         // 渲染分页组件
@@ -218,7 +220,11 @@ function changePage(page) {
     if (page < 1 || page > totalPages) return;
 
     currentPage = page;
-    loadArticles(page);
+    if(is_full_search){
+        fullTextSearch(currentText,page);
+    }else{
+        loadArticles(page);
+    }
 
     // 滚动到顶部
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -708,6 +714,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 });
+
+
+//全文搜索
+let is_full_search = false;
+let currentText = null;
+
+function html_search(){
+    fullTextSearch(document.getElementById('search').value,1);
+    document.getElementById('search').value = '';
+}
+async function fullTextSearch(text,page){
+    alert(2)
+    if (!text || text.trim() === '') {
+        alert('搜索文本为空');
+        return; // 直接退出函数
+    }
+    alert(1);
+    is_full_search = true;
+    currentText = text;
+    try {
+        // 显示加载状态
+        document.getElementById('articleListContainer').innerHTML = `
+            <div class="col-span-3 flex justify-center py-12">
+                <div class="loading-spinner"></div>
+                <p class="ml-4 text-gray-600">正在加载文章数据...</p>
+            </div>
+        `;
+
+        // 构建查询参数
+        const params = new URLSearchParams({
+            page: page,
+            limit: articlesPerPage,
+            email: email,
+            text: text
+        });
+
+        // API请求-从数据库加载文章来填充文章列表
+        try {
+            const response = await fetch(`/api/articles/search?${params.toString()}`);
+            if (!response.ok) {
+                alert(response.status)
+                throw new Error(`API请求失败: ${response.status}`);
+            }
+            pageData = await response.json();
+        } catch (error) {
+            console.error('获取文章数据失败:', error);
+            const data = {
+                total: 0,
+                page: 1,
+                limit: articlesPerPage,
+                data: []
+            };
+        }
+        // 更新全局变量
+        totalArticles = pageData.total;
+        currentPage = 1;
+        // 渲染文章列表
+        renderArticles(pageData.data);
+        // 渲染分页组件
+        renderPagination();
+    } catch (error) {
+        console.error('加载文章失败:', error);
+        document.getElementById('articleListContainer').innerHTML = `
+            <div class="col-span-3 text-center py-12">
+                <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                <p class="text-gray-600">加载文章失败，请稍后再试</p>
+                <button onclick="fullTextSearch(text,page)" class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    重新加载
+                </button>
+            </div>
+        `;
+    }
+}
 
 // Simulate admin link visibility
 const isAdmin = true; // Change this to false to hide admin link

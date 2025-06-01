@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -117,6 +119,46 @@ public class ArticleService {
                             startDateTime, endDateTime, pageable);
     }
 
+
+    @Transactional
+    public Page<ArticleWithCategoryDTO> getArticlesWithText(
+            Pageable pageable, Long userId, String text) {
+        // 预处理搜索文本
+        String process_text = preprocessSearchText(text);
+
+        // 查询获取分页结果
+        Page<ArticleWithSearchDTO> dtos = articleRepository.findArticlesByContent(
+                userId, process_text, pageable
+        );
+
+        // 使用map转换DTO（推荐方案）
+        Page<ArticleWithCategoryDTO> cdtos = dtos.map(dto ->
+                new ArticleWithCategoryDTO(
+                        dto.getId(),
+                        dto.getTitle(),
+                        dto.getCategoryId(),  // 匹配category_id字段
+                        dto.getVisibility(),
+                        // 格式化时间（处理空值）
+                        dto.getCreateTime() != null ?
+                                dto.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null,
+                        dto.getCategoryName()  // 匹配category_name
+                )
+        );
+
+        return cdtos;
+    }
+    private String preprocessSearchText(String text) {
+        // 1. 移除特殊字符（保留中文和基本符号）
+        String cleanText = text.replaceAll("[^\\p{L}\\p{Nd}\\u4E00-\\u9FA5]+", " ");
+
+        // 2. 按 ngram 分词规则拆分并添加布尔操作符
+        return Arrays.stream(cleanText.split("\\s+"))
+                .filter(word -> word.length() >= 2) // ngram 最小词长为2
+                .map(word -> "+" + word)            // 必须包含（布尔模式）
+                .collect(Collectors.joining(" "));
+    }
+
+    @Transactional
     public Article modifyArticle(Long userId, Long articleId, Long lastCategoryId, ArticleCreateRequest request){
         List<String> processedTags = request.getTags().stream()
                 .map(String::trim)                  // 去除空格

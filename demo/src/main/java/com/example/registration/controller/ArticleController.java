@@ -76,6 +76,29 @@ public class ArticleController {
         return ResponseEntity.ok().body(responseBody);
     }
 
+    // 新增分页查询API
+    @GetMapping("/search")
+    public ResponseEntity<?> searchArticles(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int limit,
+            @RequestParam String email,
+            // 新增筛选参数（均为可选）
+            @RequestParam(required = true) String text) {
+        Long userId = userRepository.findUserIdByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
+        // 创建分页请求 (page从1开始计数)
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by("title").descending());
+
+        // 调用Service获取分页数据
+        Page<ArticleWithCategoryDTO> articlePage = articleService.getArticlesWithText(pageable, userId, text);
+
+        Map<String, Object> responseBody = Map.of(
+                "total", articlePage.getTotalElements(),
+                "data", articlePage.getContent()
+        );
+        return ResponseEntity.ok().body(responseBody);
+    }
+
     @GetMapping("/shared")
     public ResponseEntity<?> getSharedArticles(
             @RequestParam(defaultValue = "1") int page,
