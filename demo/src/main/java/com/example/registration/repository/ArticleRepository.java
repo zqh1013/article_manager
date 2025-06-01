@@ -31,7 +31,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         FROM Article a
         LEFT JOIN Category c ON a.categoryId = c.id AND a.userId = c.userId
         WHERE a.userId = :userId
-
         AND (:category IS NULL OR c.id = :category)
         AND (:startDate IS NULL OR a.createTime >= :startDate)
         AND (:endDate IS NULL OR a.createTime <= :endDate)
