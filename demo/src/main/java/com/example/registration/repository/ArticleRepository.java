@@ -36,13 +36,21 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
         AND (:startDate IS NULL OR a.createTime >= :startDate)
         AND (:endDate IS NULL OR a.createTime <= :endDate)
         """)
-    Page<ArticleWithCategoryDTO> findArticlesWithConditions(
+    List<ArticleWithCategoryDTO> findArticlesWithConditions(
             @Param("userId") Long userId,
             @Param("tags") String tagsJson,
             @Param("category") Long category,
             @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            Pageable pageable);
+            @Param("endDate") LocalDateTime endDate
+    );
+//    Page<ArticleWithCategoryDTO> findArticlesWithConditions(
+//            @Param("userId") Long userId,
+//            @Param("tags") String tagsJson,
+//            @Param("category") Long category,
+//            @Param("startDate") LocalDateTime startDate,
+//            @Param("endDate") LocalDateTime endDate,
+//            Pageable pageable
+//    );
 
 
     @Query("SELECT NEW com.example.registration.dto.ArticleWithShareDTO(" +

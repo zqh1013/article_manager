@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,11 +23,8 @@ import java.time.format.DateTimeFormatter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -125,18 +123,68 @@ public class ArticleService {
         LocalDateTime endDateTime = endDate != null ? endDate.plusDays(1).atStartOfDay() : null;
 
         // 查询
-        Page<ArticleWithCategoryDTO> pages = articleRepository.findArticlesWithConditions(
-                        userId, tagsJson, category,    // tags和tagList都传给repository层
-                        startDateTime, endDateTime, pageable);
-//        return pages;
-        // 在Service层进行tags过滤
+//        Page<ArticleWithCategoryDTO> pages = articleRepository.findArticlesWithConditions(
+//                        userId, tagsJson, category,    // tags和tagList都传给repository层
+//                        startDateTime, endDateTime, pageable);
+//
+//        // 在Service层进行tags过滤
+//        Set<String> finalTagSet = tagSet;
+//        List<ArticleWithCategoryDTO> filteredContent = pages.getContent().stream()
+//                .filter(dto -> hasOverlap(dto.getTags(), finalTagSet))
+//                .collect(Collectors.toList());
+//
+//        // 创建新的分页结果（保持分页信息不变）
+//        return new PageImpl<>(filteredContent, pageable, filteredContent.size());
+
+//        // 获取未过滤的原始分页结果
+//        Page<ArticleWithCategoryDTO> pages = articleRepository.findArticlesWithConditions(
+//                userId, tagsJson, category,
+//                startDateTime, endDateTime, pageable);
+//
+//        // 在Service层进行tags过滤（保持原始分页信息）
+//        Set<String> finalTagSet = tagSet;
+//        List<ArticleWithCategoryDTO> filteredContent = pages.getContent().stream()
+//                .filter(dto -> hasOverlap(dto.getTags(), finalTagSet))
+//                .collect(Collectors.toList());
+//
+//        // *** 修复关键：创建新分页时使用原始分页信息 ***
+//        return new PageImpl<>(
+//                filteredContent,                 // 过滤后的内容
+//                pages.getPageable(),             // 原始分页请求
+//                pages.getTotalElements()         // 维护过滤前的总记录数（重要！）
+//        );
+        // 关键修改：获取所有数据（不分页）
+        List<ArticleWithCategoryDTO> allItems = articleRepository.findArticlesWithConditions(
+                userId, tagsJson, category, startDateTime, endDateTime);
+
+        // 应用标签过滤（对完整数据集）
         Set<String> finalTagSet = tagSet;
-        List<ArticleWithCategoryDTO> filteredContent = pages.getContent().stream()
+        List<ArticleWithCategoryDTO> filteredItems = allItems.stream()
                 .filter(dto -> hasOverlap(dto.getTags(), finalTagSet))
                 .collect(Collectors.toList());
 
-        // 创建新的分页结果（保持分页信息不变）
-        return new PageImpl<>(filteredContent, pageable, filteredContent.size());
+        // 手动分页：基于完整过滤后的结果集
+        int totalItems = filteredItems.size();
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+
+        // 计算当前页数据范围
+        List<ArticleWithCategoryDTO> pageContent;
+        if (startItem < totalItems) {
+            int toIndex = Math.min(startItem + pageSize, totalItems);
+            pageContent = filteredItems.subList(startItem, toIndex);
+        } else {
+            pageContent = Collections.emptyList();
+        }
+
+        // 创建正确分页信息（包括实际总元素数）
+        return new PageImpl<>(
+                pageContent,
+                PageRequest.of(currentPage, pageSize),  // 使用新的分页请求
+                totalItems
+        );
+
     }
     // 检查DTO的tags集合与输入tags集合是否有交集
     private boolean hasOverlap(List<String> dtoTags, Set<String> inputTagSet) {
