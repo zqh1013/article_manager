@@ -1,7 +1,9 @@
 package com.example.registration.service;
 
-import com.example.registration.dto.*;
+import com.example.registration.dto.ArticleCreateRequest;
+import com.example.registration.dto.ArticleWithCategoryDTO;
 import com.example.registration.exception.exception.EmailNotRegisteredException;
+import com.example.registration.dto.*;
 import com.example.registration.model.Article;
 import com.example.registration.model.Category;
 import com.example.registration.model.Comment;
@@ -33,6 +35,11 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+
+//    public ArticleService(ArticleRepository articleRepository,CategoryRepository categoryRepository) {
+//        this.articleRepository = articleRepository;
+//        this.categoryRepository=categoryRepository;
+//    }
 
 //    public ArticleService(ArticleRepository articleRepository,CategoryRepository categoryRepository) {
 //        this.articleRepository = articleRepository;

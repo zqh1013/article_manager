@@ -699,6 +699,20 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'login.html';
     }else {
         alert(email);
+
+        document.querySelectorAll('.profile-link').forEach(link => {
+            // 创建新的URL对象
+            const url = new URL(link.href);
+
+            // 添加email参数
+            url.searchParams.set('email', email);
+
+            // 更新链接
+            link.href = url.toString();
+
+            // 添加工具提示
+            link.title = `Email参数: ${email}`;
+        });
         loadCategories();
         populateFilterCategories();
 
