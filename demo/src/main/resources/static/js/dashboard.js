@@ -108,6 +108,19 @@ function renderArticles(articles) {
             ? 'text-green-600'
             : '';
 
+        // ============== 新增标签区域 ==============
+        let tagsHtml = '';
+        if (article.tags && article.tags.length > 0) {
+            tagsHtml = `
+                <div class="mt-2 flex overflow-x-auto hide-scrollbar space-x-1 py-1">
+                    ${article.tags.map(tag => `
+                        <span class="flex-shrink-0 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+                            ${tag}
+                        </span>
+                    `).join('')}
+                </div>
+            `;
+        }
         html += `
         <div class="card-hover bg-white rounded-lg shadow-md overflow-visible flex flex-col">
             <div class="p-5 flex-grow">
@@ -129,6 +142,7 @@ function renderArticles(articles) {
                         </div>
                     </div>
                 </div>
+                ${tagsHtml}
                 <p class="mt-1 text-sm text-gray-600 leading-relaxed line-clamp-3">
                     摘要暂无
                 </p>

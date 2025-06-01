@@ -47,7 +47,13 @@
         }
         .show { display: block; }
         .fade-in { animation: fadeIn 0.3s; }
-
+        /* 标签样式优化 */
+        .bg-indigo-100 {
+            background-color: #e0e7ff;
+        }
+        .text-indigo-800 {
+            color: #3730a3;
+        }
         #categoryList {
             max-height: 400px;      /* 设置容器最大高度 */
             overflow-y: auto;       /* 垂直溢出时显示滚动条 */
@@ -59,6 +65,7 @@
         #search::-webkit-search-cancel-button {
             display: none; /* 隐藏清除按钮 */
         }
+
     </style>
 </head>
 <body class="min-h-screen">
