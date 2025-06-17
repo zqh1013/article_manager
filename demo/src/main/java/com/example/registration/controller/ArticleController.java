@@ -124,7 +124,7 @@ public class ArticleController {
                 "data", article
         ));
     }
-    @PostMapping("/article_editor/modify")
+    @PostMapping("/article_modify")
     public ResponseEntity<?> modifyArticle(@RequestParam String email,
                                            @RequestParam Long articleId,
                                            @RequestParam Long lastCategoryId,
