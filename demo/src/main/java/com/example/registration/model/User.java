@@ -78,6 +78,10 @@ public class User {
     @Column(name = "answer", nullable = false, length = 100)
     private String answer;
 
+    @Setter
+    @Column(name = "is_admin", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean isAdmin = false;
+
 
     public void setNickname(String nickname) {
         this.nickname = nickname.trim(); // 自动去除首尾空格

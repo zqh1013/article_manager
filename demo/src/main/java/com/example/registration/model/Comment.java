@@ -38,4 +38,8 @@ public class Comment {
 
     @Column(name = "article_id", nullable = false)
     private Long articleId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status", columnDefinition = "VARCHAR(20) DEFAULT 'PENDING'")
+    private Article.ReviewStatus reviewStatus = Article.ReviewStatus.PENDING;
 }

@@ -10,6 +10,7 @@ let currentFilter = {
     endDate: ''
 };
 let pageData = null;
+let isAdmin = false;
 
 // 从API获取文章数据
 async function loadArticles(page) {
@@ -77,6 +78,7 @@ async function loadArticles(page) {
 }
 
 // 渲染文章列表
+let reviewStatusHtml = '';
 function renderArticles(articles) {
     const container = document.getElementById('articleListContainer');
 
@@ -95,6 +97,17 @@ function renderArticles(articles) {
     let html = '';
 
     articles.forEach(article => {
+        // 添加审核状态显示
+        // 添加审核状态显示（仅当文章是公开状态时显示）
+        reviewStatusHtml = '';
+        if (article.visibility === 'public') {
+            const reviewStatus = getReviewStatus(article.reviewStatus);
+            reviewStatusHtml = `
+                <span class="ml-2 ${reviewStatus.class}">
+                    ${reviewStatus.icon} ${reviewStatus.text}
+                </span>
+            `;
+        }
         // 根据可见性设置图标和文本
         const visibilityIcon = article.visibility === 'public'
             ? '<i class="fas fa-globe-asia mr-1"></i>'
@@ -125,7 +138,7 @@ function renderArticles(articles) {
         <div class="card-hover bg-white rounded-lg shadow-md overflow-visible flex flex-col">
             <div class="p-5 flex-grow">
                 <div class="flex justify-between items-start mb-1">
-                    <a href="article_view.html?email=${email}&articleId=${article.id}&last=dashboard.html" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
+                    <a href="article_view.html?email=${email}&articleId=${article.id}&isAdmin=${isAdmin}&last=${encodeURIComponent('dashboard.html?')}" class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
                         ${article.title}
                     </a>
                     <div class="relative article-menu">
@@ -156,6 +169,8 @@ function renderArticles(articles) {
                         <span class="ml-2 ${visibilityClass}">
                             ${visibilityIcon} ${visibilityText}
                         </span>
+                        <!-- 添加审核状态 -->
+                        ${reviewStatusHtml}
                     </div>
                     <span>${formatDate(article.create_time)}</span>
                 </div>
@@ -706,7 +721,7 @@ function createArticle(){
 
 //跳转功能
 function jump_shared_articles(){
-    window.location.href = `shared_articles.html?email=${email}`
+    window.location.href = `shared_articles.html?email=${email}&isAdmin=${isAdmin}`
 }
 
 
@@ -714,12 +729,12 @@ function jump_shared_articles(){
 document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     email = urlParams.get('email') || null;
+    checkAdminStatus();
     if(!email){
         alert("请先登录");
         window.location.href = 'login.html';
     }else {
         alert(email);
-
         document.querySelectorAll('.profile-link').forEach(link => {
             // 创建新的URL对象
             const url = new URL(link.href);
@@ -739,7 +754,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadArticles(currentPage);
         // 设置筛选按钮事件
         initFilterButtons();
-
     }
 });
 
@@ -814,13 +828,6 @@ async function fullTextSearch(text,page){
     }
 }
 
-// Simulate admin link visibility
-const isAdmin = true; // Change this to false to hide admin link
-if (isAdmin) {
-    document.getElementById('adminLinkContainer').style.display = 'block';
-} else {
-    document.getElementById('adminLinkContainer').style.display = 'none';
-}
 
 // 用户头像下拉菜单交互
 const menuButton = document.getElementById('user-menu-button');
@@ -831,3 +838,62 @@ menuButton.addEventListener('click', () => {
   dropdown.style.display = isExpanded ? 'none' : 'block';
 
 });
+
+function jumpToAdmin(){
+    window.location.href = `admin_panel.html?email=${email}&admin=${isAdmin}`;
+}
+
+//检查是否为管理员
+async function checkAdminStatus() {
+    try {
+        const response = await fetch(`/api/user/info?email=${encodeURIComponent(email)}`);
+        if (!response.ok) throw new Error('获取用户信息失败');
+
+        const data = await response.json();
+        if (!data.success || !data.data) throw new Error('用户信息无效');
+
+        // 检查管理员权限
+        isAdmin = data.data.isAdmin || false;
+        adminName = data.data.nickname || '';
+        if (isAdmin) {
+            document.getElementById('adminLinkContainer').style.display = 'block';
+        } else {
+            document.getElementById('adminLinkContainer').style.display = 'none';
+        }
+
+    } catch (error) {
+        console.error('检查管理员状态失败:', error);
+        alert('检查管理员状态失败: ' + error.message);
+        isAdmin = false;
+    }
+}
+
+// 添加获取审核状态的辅助函数
+function getReviewStatus(status) {
+    switch (status) {
+        case 'PENDING':
+            return {
+                text: '待审核',
+                class: 'bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full',
+                icon: '<i class="fas fa-clock mr-1"></i>'
+            };
+        case 'APPROVED':
+            return {
+                text: '已通过',
+                class: 'bg-green-100 text-green-800 px-2 py-0.5 rounded-full',
+                icon: '<i class="fas fa-check-circle mr-1"></i>'
+            };
+        case 'REJECTED':
+            return {
+                text: '未通过',
+                class: 'bg-red-100 text-red-800 px-2 py-0.5 rounded-full',
+                icon: '<i class="fas fa-times-circle mr-1"></i>'
+            };
+        default:
+            return {
+                text: '未知',
+                class: 'bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full',
+                icon: '<i class="fas fa-question-circle mr-1"></i>'
+            };
+    }
+}

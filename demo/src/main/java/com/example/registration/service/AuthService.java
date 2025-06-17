@@ -35,18 +35,22 @@ public class AuthService {
         user.setPassword((request.getPassword()));
         user.setQuestion((request.getQuestion()));
         user.setAnswer(request.getAnswer());
+        // 检查管理员验证码
+        if ("88888".equals(request.getAdminCode())) {
+            user.setAdmin(true);
+        }
         userRepository.save(user);
     }
 
-    public String authenticate(String email, String rawPassword){
+    public boolean authenticate(String email, String rawPassword){
         User user = userRepository.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new EmailNotRegisteredException("该邮箱未注册"));
 
         if (!rawPassword.equals(user.getPassword())) {
             throw new IncorrectPasswordException("密码不正确");
         }
-
-        return generateBasicAuthToken(user.getEmail(), user.getPassword()); // 生成JWT令牌
+        return user.isAdmin();
+//        return generateBasicAuthToken(user.getEmail(), user.getPassword()); // 生成JWT令牌
     }
 
     private String generateBasicAuthToken(String email, String password) {

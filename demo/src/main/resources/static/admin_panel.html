@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理员面板 - 文章管理器</title>
+    <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans SC', sans-serif;
+            background-color: #f8fafc;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #6366f1;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            color: #374151;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pagination-btn:hover {
+            background-color: #f3f4f6;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background-color: #6366f1;
+            color: white;
+            border-color: #6366f1;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+<!-- 导航栏 -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <a href="javascript:backToDashboard();" class="flex-shrink-0 flex items-center text-indigo-600 hover:text-indigo-700">
+                    <i class="fas fa-arrow-left mr-3"></i>
+                    <i class="fas fa-book-open text-2xl mr-2"></i>
+                    <span class="text-xl font-semibold text-gray-800">文章管理器</span>
+                </a>
+            </div>
+            <div class="flex items-center">
+                <div class="mr-4 text-sm text-gray-700">
+                    <span id="adminName"></span> (管理员)
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto p-6 space-y-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fas fa-user-shield mr-3 text-indigo-600"></i>管理员面板
+    </h1>
+
+    <!-- 待审核文章区域 -->
+    <section class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+            <h2 class="text-xl font-semibold text-gray-800">
+                待审核文章 (<span id="pendingArticleTotalCount">0</span>)
+                <span class="text-sm text-gray-500 ml-2">
+                    (当前显示: <span id="pendingArticlePageCount">0</span>)
+                </span>
+            </h2>
+            <div>
+                <button id="approveAllBtn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium hidden">
+                    <i class="fas fa-check-circle mr-2"></i>一键通过
+                </button>
+            </div>
+        </div>
+
+        <div id="pendingArticlesContainer" class="divide-y divide-gray-200">
+            <div id="articlesLoading" class="flex justify-center py-12">
+                <div class="loading-spinner"></div>
+                <p class="ml-4 text-gray-600">正在加载待审核文章...</p>
+            </div>
+        </div>
+
+        <!-- 分页控件 -->
+        <div id="articlesPagination" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div id="articlesPaginationInfo" class="text-sm text-gray-700"></div>
+            <div id="articlesPaginationControls" class="flex space-x-2"></div>
+        </div>
+    </section>
+
+    <!-- 评论管理区域 -->
+    <section class="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="border-b border-gray-200 px-6 py-4">
+            <h2 class="text-xl font-semibold text-gray-800">
+                最新评论管理 (<span id="commentTotalCount">0</span>)
+                <span class="text-sm text-gray-500 ml-2">
+                    (当前显示: <span id="commentPageCount">0</span>)
+                </span>
+            </h2>
+        </div>
+
+        <div id="commentsContainer" class="divide-y divide-gray-200">
+            <div id="commentsLoading" class="flex justify-center py-12">
+                <div class="loading-spinner"></div>
+                <p class="ml-4 text-gray-600">正在加载评论数据...</p>
+            </div>
+        </div>
+
+        <!-- 分页控件 -->
+        <div id="commentsPagination" class="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div id="commentsPaginationInfo" class="text-sm text-gray-700"></div>
+            <div id="commentsPaginationControls" class="flex space-x-2"></div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-white border-t border-gray-200 py-6 mt-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-gray-500">
+        管理员操作请谨慎。
+    </div>
+</footer>
+
+<script>
+    let email = null;
+    let isAdmin = false;
+    let adminName = '';
+
+    // 分页状态
+    let articlesPage = 0;
+    let articlesPageSize = 2;
+    let articlesTotalElements = 0;
+    let articlesTotalPages = 0;
+
+    let commentsPage = 0;
+    let commentsPageSize = 2;
+    let commentsTotalElements = 0;
+    let commentsTotalPages = 0;
+
+    // 从URL获取email参数
+    function getEmailFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        email = urlParams.get('email');
+        if (!email) {
+            alert('请先登录');
+            window.location.href = 'login.html';
+        }
+    }
+
+    // 获取用户信息，验证是否为管理员
+    async function checkAdminStatus() {
+        try {
+            const response = await fetch(`/api/user/info?email=${encodeURIComponent(email)}`);
+            if (!response.ok) throw new Error('获取用户信息失败');
+
+            const data = await response.json();
+            if (!data.success || !data.data) throw new Error('用户信息无效');
+
+            // 检查管理员权限
+            isAdmin = data.data.isAdmin || false;
+            adminName = data.data.nickname || '';
+
+            if (!isAdmin) {
+                alert('您没有管理员权限');
+                backToDashboard();
+            } else {
+                document.getElementById('adminName').textContent = adminName;
+                loadPendingArticles();
+                loadRecentComments();
+            }
+        } catch (error) {
+            console.error('检查管理员状态失败:', error);
+            alert('检查管理员状态失败: ' + error.message);
+            backToDashboard();
+        }
+    }
+
+    // 返回仪表盘
+    function backToDashboard() {
+        window.location.href = `dashboard.html?email=${email}&isAdmin=${isAdmin}`;
+    }
+
+    // 加载待审核文章
+    async function loadPendingArticles(page = articlesPage) {
+        try {
+            // 显示加载状态
+            // document.getElementById('articlesLoading').style.display = 'flex';
+            document.getElementById('pendingArticlesContainer').innerHTML = '';
+            // 构建查询参数
+            const params = new URLSearchParams({
+                page: page,
+                size: articlesPageSize,
+                sort: 'createTime,desc'
+            });
+            const response = await fetch(`/api/admin/articles/pending?${params.toString()}&email=${email}`);
+            if (!response.ok) throw new Error('获取待审核文章失败');
+
+            const data = await response.json();
+
+            // 更新分页状态
+            articlesPage = page;
+            articlesTotalElements = data.totalElements;
+            articlesTotalPages = data.totalPages;
+
+            // 更新计数显示
+            document.getElementById('pendingArticleTotalCount').textContent = articlesTotalElements;
+            document.getElementById('pendingArticlePageCount').textContent = data.content.length;
+
+            // 渲染文章
+            renderPendingArticles(data.content || []);
+
+            // 渲染分页控件
+            renderArticlesPagination();
+        } catch (error) {
+            console.error('加载待审核文章失败:', error);
+            document.getElementById('pendingArticlesContainer').innerHTML = `
+                <div class="py-8 text-center text-red-500">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>加载失败: ${error.message}
+                </div>
+            `;
+        } finally {
+            document.getElementById('articlesLoading').style.display = 'none';
+        }
+    }
+
+    // 渲染待审核文章
+    function renderPendingArticles(articles) {
+        const container = document.getElementById('pendingArticlesContainer');
+
+        if (articles.length === 0) {
+            container.innerHTML = `
+                <div class="py-8 text-center text-gray-500">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>当前没有待审核的文章
+                </div>
+            `;
+            return;
+        }
+
+        // 显示一键通过按钮
+        document.getElementById('approveAllBtn').classList.remove('hidden');
+
+        let html = '';
+
+        articles.forEach(article => {
+            html += `
+                <div class="p-6 card-hover" data-id="${article.id}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <a href="article_view.html?email=${email}&articleId=${article.id}&isAdmin=${isAdmin}&last=${encodeURIComponent('admin_panel.html?admin='+isAdmin)}"
+                           class="text-lg font-semibold text-gray-900 hover:text-indigo-600 hover:underline">
+                            ${article.title}
+                            </a>
+                            <div class="mt-2 text-sm text-gray-500">
+                                <span class="mr-4"><i class="fas fa-user mr-1"></i>${article.author}</span>
+                                <span><i class="fas fa-clock mr-1"></i>${article.createTime}</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="approveArticle(${article.id})" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+                                <i class="fas fa-check mr-1"></i>通过
+                            </button>
+                            <button onclick="rejectArticle(${article.id})" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium">
+                                <i class="fas fa-times mr-1"></i>拒绝
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="prose max-w-none">${truncateContent(article.content, 150)}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // 渲染文章分页控件
+    function renderArticlesPagination() {
+        const infoContainer = document.getElementById('articlesPaginationInfo');
+        const controlsContainer = document.getElementById('articlesPaginationControls');
+
+        // 更新分页信息
+        infoContainer.innerHTML = `
+            第 ${articlesPage + 1} 页 / 共 ${articlesTotalPages} 页
+        `;
+
+        // 更新分页按钮
+        let controlsHtml = '';
+
+        // 上一页按钮
+        controlsHtml += `
+            <button onclick="changeArticlesPage(${articlesPage - 1})"
+                ${articlesPage === 0 ? 'disabled' : ''}
+                class="pagination-btn ${articlesPage === 0 ? 'opacity-50 cursor-not-allowed' : ''}">
+                上一页
+            </button>
+        `;
+
+        // 页码按钮
+        const maxVisiblePages = 5;
+        let startPage = Math.max(0, articlesPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(articlesTotalPages - 1, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(0, endPage - maxVisiblePages + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            controlsHtml += `
+                <button onclick="changeArticlesPage(${i})"
+                    class="pagination-btn ${i === articlesPage ? 'active' : ''}">
+                    ${i + 1}
+                </button>
+            `;
+        }
+
+        // 下一页按钮
+        controlsHtml += `
+            <button onclick="changeArticlesPage(${articlesPage + 1})"
+                ${articlesPage >= articlesTotalPages - 1 ? 'disabled' : ''}
+                class="pagination-btn ${articlesPage >= articlesTotalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+                下一页
+            </button>
+        `;
+
+        controlsContainer.innerHTML = controlsHtml;
+    }
+
+    // 改变文章页码
+    function changeArticlesPage(page) {
+        if (page < 0 || page >= articlesTotalPages) return;
+        loadPendingArticles(page);
+    }
+
+    // 截断内容
+    function truncateContent(content, maxLength) {
+        if (!content) return '';
+        if (content.length <= maxLength) return content;
+        return content.substring(0, maxLength) + '...';
+    }
+
+    // 审核文章操作
+    async function reviewArticle(articleId, status) {
+        if (!confirm(`确定要${status === 'APPROVED' ? '通过' : '拒绝'}这篇文章吗？`)) return;
+
+        try {
+            const response = await fetch(`/api/admin/articles/${articleId}/review?status=${status}&email=${email}`, {
+                method: 'PUT'
+            });
+
+            if (!response.ok) throw new Error('审核操作失败');
+
+            // 重新加载当前页
+            loadPendingArticles(articlesPage);
+
+            alert(`文章已${status === 'APPROVED' ? '通过' : '拒绝'}`);
+        } catch (error) {
+            console.error('审核文章失败:', error);
+            alert('审核操作失败: ' + error.message);
+        }
+    }
+
+    // 通过文章
+    function approveArticle(articleId) {
+        reviewArticle(articleId, 'APPROVED');
+    }
+
+    // 拒绝文章
+    function rejectArticle(articleId) {
+        reviewArticle(articleId, 'REJECTED');
+    }
+
+    // 一键通过所有文章
+    document.getElementById('approveAllBtn').addEventListener('click', async () => {
+        if (!confirm('确定要通过所有待审核文章吗？')) return;
+
+        try {
+            const response = await fetch(`/api/admin/articles/approve-all?email=${email}`, {
+                method: 'PUT'
+            });
+
+            if (!response.ok) throw new Error('一键通过失败');
+
+            // 重新加载文章
+            loadPendingArticles(articlesPage);
+
+            alert('所有待审核文章已通过');
+        } catch (error) {
+            console.error('一键通过失败:', error);
+            alert('操作失败: ' + error.message);
+        }
+    });
+
+    // 加载近期评论
+    async function loadRecentComments(page = commentsPage) {
+        try {
+            // 显示加载状态
+            // document.getElementById('commentsLoading').style.display = 'flex';
+            document.getElementById('commentsContainer').innerHTML = '';
+
+            // 构建查询参数
+            const params = new URLSearchParams({
+                page: page,
+                size: commentsPageSize,
+                sort: 'createTime,desc'
+            });
+
+            const response = await fetch(`/api/admin/comments/recent?${params.toString()}&email=${email}`);
+            if (!response.ok) throw new Error('获取评论失败');
+
+            const data = await response.json();
+
+            // 更新分页状态
+            commentsPage = page;
+            commentsTotalElements = data.totalElements;
+            commentsTotalPages = data.totalPages;
+
+            // 更新计数显示
+            document.getElementById('commentTotalCount').textContent = commentsTotalElements;
+            document.getElementById('commentPageCount').textContent = data.content.length;
+
+            // 渲染评论
+            renderRecentComments(data.content || []);
+
+            // 渲染分页控件
+            renderCommentsPagination();
+        } catch (error) {
+            console.error('加载评论失败:', error);
+            document.getElementById('commentsContainer').innerHTML = `
+                <div class="py-8 text-center text-red-500">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>加载失败: ${error.message}
+                </div>
+            `;
+        } finally {
+            document.getElementById('commentsLoading').style.display = 'none';
+        }
+    }
+
+    // 渲染评论分页控件
+    function renderCommentsPagination() {
+        const infoContainer = document.getElementById('commentsPaginationInfo');
+        const controlsContainer = document.getElementById('commentsPaginationControls');
+
+        // 更新分页信息
+        infoContainer.innerHTML = `
+            第 ${commentsPage + 1} 页 / 共 ${commentsTotalPages} 页
+        `;
+
+        // 更新分页按钮
+        let controlsHtml = '';
+
+        // 上一页按钮
+        controlsHtml += `
+            <button onclick="changeCommentsPage(${commentsPage - 1})"
+                ${commentsPage === 0 ? 'disabled' : ''}
+                class="pagination-btn ${commentsPage === 0 ? 'opacity-50 cursor-not-allowed' : ''}">
+                上一页
+            </button>
+        `;
+
+        // 页码按钮
+        const maxVisiblePages = 5;
+        let startPage = Math.max(0, commentsPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(commentsTotalPages - 1, startPage + maxVisiblePages - 1);
+
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(0, endPage - maxVisiblePages + 1);
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            controlsHtml += `
+                <button onclick="changeCommentsPage(${i})"
+                    class="pagination-btn ${i === commentsPage ? 'active' : ''}">
+                    ${i + 1}
+                </button>
+            `;
+        }
+
+        // 下一页按钮
+        controlsHtml += `
+            <button onclick="changeCommentsPage(${commentsPage + 1})"
+                ${commentsPage >= commentsTotalPages - 1 ? 'disabled' : ''}
+                class="pagination-btn ${commentsPage >= commentsTotalPages - 1 ? 'opacity-50 cursor-not-allowed' : ''}">
+                下一页
+            </button>
+        `;
+
+        controlsContainer.innerHTML = controlsHtml;
+    }
+
+    // 改变评论页码
+    function changeCommentsPage(page) {
+        if (page < 0 || page >= commentsTotalPages) return;
+        loadRecentComments(page);
+    }
+
+    // 渲染近期评论
+    function renderRecentComments(comments) {
+        const container = document.getElementById('commentsContainer');
+
+        if (comments.length === 0) {
+            container.innerHTML = `
+                <div class="py-8 text-center text-gray-500">
+                    <i class="fas fa-comment-alt mr-2"></i>当前没有需要管理的评论
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+
+        comments.forEach(comment => {
+            html += `
+                <div class="p-6 card-hover" data-id="${comment.id}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <div class="flex items-center">
+
+                                <div>
+                                    <h4 class="font-medium text-gray-900">${comment.author}</h4>
+                                    <p class="text-sm text-gray-500">${comment.date}</p>
+                                </div>
+                            </div>
+                            <div class="mt-3 text-gray-700">
+                                ${comment.content}
+                            </div>
+                            <div class="mt-2 text-sm text-gray-500">
+                                <i class="fas fa-book mr-1"></i>
+                                <a href="article_view.html?email=${email}&articleId=${comment.articleId}" class="text-indigo-600 hover:underline">
+                                    文章: ${comment.articleTitle || '未知文章'}
+                                </a>
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="deleteComment(${comment.id})" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium">
+                                <i class="fas fa-trash mr-1"></i>删除
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // 删除评论
+    async function deleteComment(commentId) {
+        if (!confirm('确定要删除这条评论吗？此操作不可恢复。')) return;
+
+        try {
+            const response = await fetch(`/api/admin/comments/${commentId}?email=${email}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('删除评论失败');
+
+            // 重新加载当前页评论
+            loadRecentComments(commentsPage);
+
+            alert('评论已删除');
+        } catch (error) {
+            console.error('删除评论失败:', error);
+            alert('删除失败: ' + error.message);
+        }
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', () => {
+        getEmailFromURL();
+        checkAdminStatus();
+    });
+
+</script>
+</body>
+</html>

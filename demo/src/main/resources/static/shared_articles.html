@@ -252,6 +252,7 @@
 <script>
     // 全局变量
     let email = null;
+    let isAdmin = false;
     let currentPage = 1;
     const articlesPerPage = 9; // 每页显示9篇文章
     let totalArticles = 0;
@@ -366,7 +367,7 @@
             <div class="card-hover bg-white rounded-lg shadow-md overflow-visible flex flex-col">
                 <div class="p-5 flex-grow">
                     <div class="flex justify-between items-start mb-1">
-                        <a href="article_view.html?email=${email}&articleId=${article.id}&last=shared_articles.html"  class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
+                        <a href="article_view.html?email=${email}&articleId=${article.id}&isAdmin=${isAdmin}&last=${encodeURIComponent('shared_articles.html?&isAdmin='+isAdmin)}"  class="text-lg font-semibold text-gray-900 hover:text-indigo-600 leading-tight">
                             ${article.title}
                         </a>
                     </div>
@@ -591,7 +592,7 @@
         if (shareLink) {
             // 实际应用中这里会验证链接格式并提取文章ID
             // 这里简化处理，直接跳转
-            shareLink += `&email=${email}&last=shared_articles.html`;
+            shareLink += `&email=${email}&last=${encodeURIComponent('shared_articles.html?&isAdmin='+isAdmin)}`;
             window.location.href = shareLink;
         } else {
             alert('请输入有效的共享链接');
@@ -633,6 +634,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         email = urlParams.get('email') || null;
+        isAdmin = urlParams.get('isAdmin') || false;
         loadSharedArticles(currentPage);
 
         // 关闭模态框的点击事件
