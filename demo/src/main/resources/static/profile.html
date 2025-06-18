@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>个人资料 - 文章管理器</title>
   <script src="https://cdn.tailwindcss.com/3.3.3"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <style> body { font-family: 'Inter', 'Noto Sans SC', sans-serif; background-color: #f8fafc; } </style>
 </head>
@@ -90,6 +91,28 @@
     </form>
   </section>
 
+  <!-- 月度统计 -->
+  <section class="bg-white p-6 rounded-lg shadow-lg">
+    <form id="statisticForm" class="space-y-4">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">
+        <button id="generate-btn" type="submit" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium">
+          <i class="fas fa-magic"></i>月度统计
+        </button>
+      </h2>
+      <div>
+        <label for="StatisticReport" class="block text-sm font-medium text-gray-700">月度报告</label>
+        <div id="StatisticReport" >
+          <p id="report_display" class="text-sm text-indigo-700 leading-relaxed hidden"></p>
+        </div>
+      </div>
+      <div>
+        <div id="keyword-cloud">
+          <canvas id="keywordPieChart" class="hidden"></canvas>
+        </div>
+      </div>
+    </form>
+  </section>
+
   <!-- Data Export Section (Story 19) -->
   <section class="bg-white p-6 rounded-lg shadow-lg">
     <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">数据导出</h2>
@@ -112,7 +135,7 @@
 </footer>
 
 <script>
- let email = null;
+  let email = null;
   document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     email = urlParams.get('email');
@@ -120,6 +143,7 @@
     const { status, data } = await response.json();
     document.getElementById('nickname').value = data.nickname;
     document.getElementById('email_display').value = data.email;
+    generateBtn.addEventListener('click', generateReport);
   });
 
   document.getElementById('profileForm').addEventListener('submit', async function (event) {
@@ -169,42 +193,123 @@
 
   });
 
+  document.getElementById('statisticForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    try {
+      const response = await fetch(`/api/ai/statistic?email=${encodeURIComponent(email)}`);
+      const stats = await response.json();
 
-
-  function previewAvatar(event) {
-    const reader = new FileReader();
-    reader.onload = function(){
-      const output = document.getElementById('avatarPreview');
-      output.src = reader.result;
-    };
-    reader.readAsDataURL(event.target.files[0]);
-    alert("头像预览已更新 (本地)。实际上传需后端处理。");
-  }
-
-
-  function exportData(format) {
-    alert(`正在准备导出为 ${format.toUpperCase()} 格式... (模拟下载)`);
-    // In a real app, this would trigger a download from the server.
-    // For JSON, you might generate a blob and create a download link.
-    // For Markdown, it would likely be a zip file.
-    if (format === 'json') {
-      const jsonData = { user: 'jane@example.com', articles: [{title: 'My first post', content: '...'}] };
-      const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `my_articles_backup.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } else if (format === 'markdown') {
-      // Simulate zip download
-      alert('Markdown (ZIP) 文件下载已开始（模拟）。');
+      if (stats.status === 'success') {
+        displayStats(stats);
+      }
+    } catch (error) {
+      console.error('加载统计数据失败', error);
     }
-  }
-  function jump_dashboard(){
-    window.location.href = `dashboard.html?email=${email}`
+  });
+
+  function displayStats(stats) {
+    // 显示AI总结
+    if (stats.ai_Report && stats.ai_Report.Report) {
+      document.getElementById('report_display').classList.remove('hidden');
+      document.getElementById('StatisticReport').innerHTML = `
+        <div class="summary-card">
+            <p>${stats.ai_Report.Report}</p>
+        </div>
+    `;
+
+      // 渲染关键词词云
+      renderKeywordCloud(stats.keyword_cloud);
+    }
+
+    function renderKeywordCloud(keywordCloud) {
+      let pieChart;
+      document.getElementById('keywordPieChart').classList.remove('hidden');
+      const pieCtx = document.getElementById('keywordPieChart').getContext('2d');
+      const pieCanvas = document.getElementById('keywordPieChart');
+      pieCtx.clearRect(0, 0, pieCanvas.width, pieCanvas.height);
+      const colors = [
+        '#3b82f6', '#8b5cf6', '#f43f5e', '#f97316', '#eab308'];
+      const labels = keywordCloud.map(item => item.keyword);
+      const dataValues = keywordCloud.map(item => item.frequency);
+      const backgroundColors = colors.slice(0, keywordCloud.length);
+      pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: labels,
+          datasets: [{
+            data: dataValues,
+            backgroundColor: backgroundColors,
+            borderWidth: 0,
+            hoverOffset: 20
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: true
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const label = context.label || '';
+                  const value = context.raw || 0;
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                  const percentage = Math.round((value / total) * 100);
+                  return `${label}: ${value} (${percentage}%)`;
+                }
+              }
+            },
+            title: {
+              display: true,
+              text: '关键词频率分布饼状图',
+              font: {
+                size: 18
+              }
+            }
+          }
+        }
+      });
+
+    }
+
+    function previewAvatar(event) {
+      const reader = new FileReader();
+      reader.onload = function () {
+        const output = document.getElementById('avatarPreview');
+        output.src = reader.result;
+      };
+      reader.readAsDataURL(event.target.files[0]);
+      alert("头像预览已更新 (本地)。实际上传需后端处理。");
+    }
+
+
+    function exportData(format) {
+      alert(`正在准备导出为 ${format.toUpperCase()} 格式... (模拟下载)`);
+      // In a real app, this would trigger a download from the server.
+      // For JSON, you might generate a blob and create a download link.
+      // For Markdown, it would likely be a zip file.
+      if (format === 'json') {
+        const jsonData = {user: 'jane@example.com', articles: [{title: 'My first post', content: '...'}]};
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `my_articles_backup.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else if (format === 'markdown') {
+        // Simulate zip download
+        alert('Markdown (ZIP) 文件下载已开始（模拟）。');
+      }
+    }
+
+    function jump_dashboard() {
+      window.location.href = `dashboard.html?email=${email}`
+    }
   }
 </script>
 </body>

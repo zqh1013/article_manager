@@ -92,6 +92,40 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             @Param("text") String text,
             Pageable pageable);
 
+//    @Query(value = """
+//    SELECT
+//        a.id,
+//        a.title,
+//        a.category_id,
+//        a.visibility,
+//        a.create_time,
+//        c.name
+//    FROM articles a
+//    LEFT JOIN categories c ON a.category_id = c.id AND a.user_id = c.user_id
+//    WHERE a.user_id = :userId
+//    AND MATCH(a.content) AGAINST(:text IN BOOLEAN MODE)
+//    """,
+//            countQuery = """
+//    SELECT COUNT(a.id)
+//    FROM articles a
+//    WHERE a.user_id = :userId
+//    AND MATCH(a.content) AGAINST(:text IN BOOLEAN MODE)
+//    """,
+//            nativeQuery = true)
+//    Page<ArticleWithSearchDTO> findArticlesByContent(
+//            @Param("userId") Long userId,
+//            @Param("text") String text,
+//            Pageable pageable);
+@Query("SELECT a FROM Article a " +
+        "WHERE a.userId = :userId " +
+        "AND a.createTime BETWEEN :startDate AND :endDate " +
+        "ORDER BY a.createTime DESC")
+List<Article> findByUserIdAndMonth(
+        @Param("userId") Long userId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate);
+
+
     // 更新所有待审核文章的审核状态
     @Modifying
     @Query("UPDATE Article a SET a.reviewStatus = :status WHERE a.reviewStatus = 'PENDING'")
@@ -107,4 +141,5 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     // 全量查询（非分页）
     @Query("SELECT a FROM Article a WHERE a.visibility = 'public' AND a.reviewStatus = :status")
     List<Article> findAllPublicByReviewStatus(@Param("status") Article.ReviewStatus status);
+
 }
