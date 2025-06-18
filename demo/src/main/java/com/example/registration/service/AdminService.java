@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -62,7 +63,8 @@ public class AdminService {
 
     // 获取待审核文章（分页）返回 ArticleViewDTO
     public Page<ArticleViewDTO> getPendingArticles(Pageable pageable) {
-        Page<Article> articlePage = articleRepository.findPublicByReviewStatus(Article.ReviewStatus.PENDING, pageable);
+
+        Page<Article> articlePage = articleRepository.findPublicByReviewStatus(Article.ReviewStatus.PENDING,pageable);
 
         // 转换为 ArticleViewDTO
         List<ArticleViewDTO> dtos = articlePage.getContent().stream()
@@ -93,7 +95,8 @@ public class AdminService {
 
     // 获取待管理评论（分页）返回 CommentDTO
     public Page<CommentDTO> getRecentComments(Pageable pageable) {
-        Page<Comment> commentPage = commentRepository.findApprovedPublicComments(Article.ReviewStatus.PENDING, pageable);
+        LocalDateTime startTime = LocalDateTime.now().minusDays(1);
+        Page<Comment> commentPage = commentRepository.findApprovedPublicComments(Article.ReviewStatus.PENDING,startTime, pageable);
 
         // 转换为 CommentDTO
         List<CommentDTO> dtos = commentPage.getContent().stream()
