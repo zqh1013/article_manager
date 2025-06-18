@@ -5,4 +5,5 @@
 - 之后需要手动创建全文索引
 ```
 ALTER TABLE articles ADD FULLTEXT INDEX idx_content (content) WITH PARSER ngram;
+CREATE INDEX idx_article_userid_createtime ON article (user_id, create_time);
 ```
