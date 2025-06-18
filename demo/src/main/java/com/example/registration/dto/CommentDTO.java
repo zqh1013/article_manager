@@ -13,5 +13,4 @@ public class CommentDTO {
 //    private String avatar;
     private String date;
     private String email;
-    private String articleTitle;
 }

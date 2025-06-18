@@ -31,11 +31,10 @@ public class AuthController {
     }
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-            boolean isAdmin = authService.authenticate(request.getEmail(), request.getPassword());
+            String token = authService.authenticate(request.getEmail(), request.getPassword());
             return ResponseEntity.ok().body(Map.of(
                     "success", true,
-//                    "token", token
-                    "isAdmin",isAdmin
+                    "token", token
             ));
     }
 }

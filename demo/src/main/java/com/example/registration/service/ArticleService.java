@@ -227,8 +227,7 @@ public class ArticleService {
                         // 格式化时间（处理空值）
                         dto.getCreateTime() != null ?
                                 dto.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null,
-                        dto.getCategoryName(),  // 匹配category_name
-                        dto.getReviewStatus()
+                        dto.getCategoryName()  // 匹配category_name
                 )
         );
 
@@ -247,8 +246,6 @@ public class ArticleService {
 
     @Transactional
     public Article modifyArticle(Long userId, Long articleId, Long lastCategoryId, ArticleCreateRequest request){
-        Article existingArticle = articleRepository.findById(articleId)
-                .orElseThrow(() -> new EntityNotFoundException("文章不存在"));
         List<String> processedTags = request.getTags().stream()
                 .map(String::trim)                  // 去除空格
                 .filter(tag -> !tag.isEmpty())      // 过滤空标签
@@ -263,13 +260,6 @@ public class ArticleService {
         article.setContent(request.getContent());
         article.setUserId(userId);
         article.setVisibility(request.getVisibility());
-        // 确定审核状态
-        Article.ReviewStatus newReviewStatus = determineReviewStatus(
-                existingArticle,
-                request.getVisibility(),
-                request.getContent()
-        );
-        article.setReviewStatus(newReviewStatus);
         if(lastCategoryId!=request.getCategoryId()) {
             Category lastCategory = categoryRepository.findById(lastCategoryId)
                     .orElseThrow(() -> new EntityNotFoundException("Category not found"));
@@ -284,31 +274,6 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    // 确定新的审核状态
-    private Article.ReviewStatus determineReviewStatus(Article existingArticle,
-                                                       String newVisibility,
-                                                       String newContent) {
-        // 私密文章不需要审核
-        if ("private".equals(newVisibility)) {
-            return Article.ReviewStatus.PENDING;
-        }
-
-        // 公开文章审核逻辑
-        Article.ReviewStatus currentStatus = existingArticle.getReviewStatus();
-
-        // 如果原本是未通过状态，重新提交审核
-        if (currentStatus == Article.ReviewStatus.REJECTED) {
-            return Article.ReviewStatus.PENDING;
-        }
-
-        // 如果内容有修改，需要重新审核
-        if (!existingArticle.getContent().equals(newContent)) {
-            return Article.ReviewStatus.PENDING;
-        }
-
-        // 其他情况保持原状态
-        return currentStatus;
-    }
     public ArticleViewDTO getArticleView(String email,Long articleId){
         Article article = getArticle(articleId);
         ArticleViewDTO dto = convertToDTO(article);
@@ -325,6 +290,7 @@ public class ArticleService {
         dto.setAiSummary(null);
         return dto;
     }
+
     private ArticleViewDTO convertToDTO(Article article) {
         ArticleViewDTO dto = new ArticleViewDTO();
         dto.setId(article.getId());

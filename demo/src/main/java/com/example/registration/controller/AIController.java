@@ -1,18 +1,18 @@
 package com.example.registration.controller;
 
 import com.example.registration.exception.exception.ResourceNotFoundException;
+import com.example.registration.model.ArticleRecommendation;
 import com.example.registration.repository.UserRepository;
 import com.example.registration.service.AIService;
-import com.example.registration.service.ArticleService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -112,6 +112,32 @@ public class AIController {
                 .orElseThrow(() -> new ResourceNotFoundException("用户不存在"));
         Map<String, Object> stats = aiService.getCurrentMonthStats(userId);
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/recommendations")
+    public ResponseEntity<Map<String, Object>> getRecommendations(
+            @RequestParam Long articleId,
+            @RequestParam(defaultValue = "0.35") double similarityThreshold,
+            @RequestParam(defaultValue = "2") int limit) {
+
+        try {
+            List<ArticleRecommendation> recommendations = aiService.getRecommendations(
+                    articleId, similarityThreshold, limit
+            );
+
+            return ResponseEntity.ok(Map.of(
+                    "status", "success",
+                    "current_article_id", articleId,
+                    "recommendations", recommendations
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(
+                    Map.of(
+                            "status", "error",
+                            "message", "获取推荐失败: " + e.getMessage()
+                    )
+            );
+        }
     }
 }
 

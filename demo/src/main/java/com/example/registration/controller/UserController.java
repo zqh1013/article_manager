@@ -29,8 +29,7 @@ public class UserController {
         response.put("success", true);
         response.put("data", Map.of(
                 "nickname", userInfo.nickname(),
-                "email", userInfo.email(),
-                "isAdmin",userInfo.isAdmin()
+                "email", userInfo.email()
         ));
         return ResponseEntity.ok(response);
     }

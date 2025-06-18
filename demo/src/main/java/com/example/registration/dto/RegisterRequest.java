@@ -11,7 +11,6 @@ public class RegisterRequest {
     private String confirmPassword;
     private String question;
     private String answer;
-    private String adminCode; // 新增管理员验证码字段
 
     @NotBlank(message = "请输入您的称呼")
     @Size(min = 2, max = 20, message = "称呼长度需2-20个字符")
@@ -62,13 +61,5 @@ public class RegisterRequest {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword.trim();
-    }
-
-    public String getAdminCode() {
-        return adminCode;
-    }
-
-    public void setAdminCode(String adminCode) {
-        this.adminCode = adminCode;
     }
 }

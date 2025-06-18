@@ -1,6 +1,5 @@
 package com.example.registration.dto;
 
-import com.example.registration.model.Article;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDateTime;
@@ -26,7 +25,6 @@ public class ArticleWithCategoryDTO {
     private String create_time;
 
     private String category_name; // 新增的分类名称字段
-    private String reviewStatus;
 
     // 构造函数必须与JPQL中的字段顺序匹配
     public ArticleWithCategoryDTO(
@@ -36,8 +34,7 @@ public class ArticleWithCategoryDTO {
             List<String> tags,
             String visibility,
             LocalDateTime createTime,
-            String categoryName,
-            Article.ReviewStatus reviewStatus) {
+            String categoryName) {
         this.id = id;
         this.title = title;
         this.category_id = categoryId;
@@ -46,7 +43,6 @@ public class ArticleWithCategoryDTO {
         this.create_time = createTime != null ?
                 createTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null;
         this.category_name = categoryName;
-        this.reviewStatus = reviewStatus.name();
     }
     public ArticleWithCategoryDTO(
             Long id,
@@ -54,14 +50,12 @@ public class ArticleWithCategoryDTO {
             Long categoryId,
             String visibility,
             String createTime,
-            String categoryName,
-            String reviewStatus) {
+            String categoryName) {
         this.id = id;
         this.title = title;
         this.category_id = categoryId;
         this.visibility = visibility;
         this.create_time = createTime;
         this.category_name = categoryName;
-        this.reviewStatus = reviewStatus;
     }
 }

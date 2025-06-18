@@ -113,7 +113,19 @@
     </form>
   </section>
 
-
+  <!-- Data Export Section (Story 19) -->
+  <section class="bg-white p-6 rounded-lg shadow-lg">
+    <h2 class="text-xl font-semibold text-gray-800 mb-6 border-b pb-3">数据导出</h2>
+    <p class="text-sm text-gray-600 mb-4">您可以将您的所有文章数据导出为常见的格式，以作备份或迁移。</p>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <button onclick="exportData('json')" class="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium flex items-center justify-center">
+        <i class="fas fa-file-code mr-2"></i>导出为 JSON
+      </button>
+      <button onclick="exportData('markdown')" class="flex-1 px-4 py-2.5 bg-gray-700 text-white rounded-md hover:bg-gray-800 text-sm font-medium flex items-center justify-center">
+        <i class="fab fa-markdown mr-2"></i>导出为 Markdown (压缩包)
+      </button>
+    </div>
+  </section>
 </main>
 
 <footer class="bg-white border-t border-gray-200 py-6 mt-8">
@@ -273,7 +285,27 @@
     }
 
 
-
+    function exportData(format) {
+      alert(`正在准备导出为 ${format.toUpperCase()} 格式... (模拟下载)`);
+      // In a real app, this would trigger a download from the server.
+      // For JSON, you might generate a blob and create a download link.
+      // For Markdown, it would likely be a zip file.
+      if (format === 'json') {
+        const jsonData = {user: 'jane@example.com', articles: [{title: 'My first post', content: '...'}]};
+        const blob = new Blob([JSON.stringify(jsonData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `my_articles_backup.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else if (format === 'markdown') {
+        // Simulate zip download
+        alert('Markdown (ZIP) 文件下载已开始（模拟）。');
+      }
+    }
 
     function jump_dashboard() {
       window.location.href = `dashboard.html?email=${email}`
