@@ -1,6 +1,43 @@
 let email = null;
 let articleId = null;
 let lastCategoryId = null;
+let editor = null;
+
+function initEditor(content = null) {
+    const { createEditor, createToolbar } = window.wangEditor;
+    const editorConfig = {
+        placeholder: '请输入内容...',
+        onChange(editor) {
+          console.log('内容变化：', editor.getHtml());
+        }
+    };
+    if (content == null){
+        editor = createEditor({
+            selector: '#editor-container',
+            config: editorConfig,
+            html: '<p>初始内容</p>'
+        });
+    }
+    else{
+        editor = createEditor({
+            selector: '#editor-container',
+            config: editorConfig,
+            html: content
+        });
+    }
+
+    createToolbar({
+        editor,
+        selector: '#editor-container',
+        config: {
+            toolbarKeys: [
+                'fontSize', 'fontFamily'
+            ]
+        }
+    });
+}
+
+
 // 标签管理逻辑
 const tagsInput = document.querySelector('.tags-input');
 const tagInput = tagsInput.querySelector('input');
@@ -13,9 +50,9 @@ tagInput.addEventListener('keydown', (e) => {
             const tag = document.createElement('div');
             tag.className = 'tag';
             tag.innerHTML = `
-                        <span>${value}</span>
-                        <span class="tag-remove">×</span>
-                    `;
+                            <span>${value}</span>
+                            <span class="tag-remove">×</span>
+                        `;
             tagsInput.insertBefore(tag, tagInput);
             tagInput.value = '';
         }
@@ -25,7 +62,7 @@ tagInput.addEventListener('keydown', (e) => {
 // 删除标签
 tagsInput.addEventListener('click', (e) => {
     if (e.target.classList.contains('tag-remove')) {
-        e.target.parentElement.remove();
+          e.target.parentElement.remove();
     }
 });
 
@@ -38,12 +75,12 @@ document.getElementById('articleForm').addEventListener('submit', async (e) => {
         title: document.querySelector('input[id="title"]').value,
         categoryId: document.getElementById('categorySelect').value,
         tags: Array.from(document.querySelectorAll('.tag span:first-child'))
-            .map(tag => tag.textContent),
-        content: document.querySelector('.editor-content').innerHTML,
+              .map(tag => tag.textContent),
+        content: editor.getHtml(),
         visibility: checkedRadio.value.trim()
     };
 
-    const response = await fetch(`/api/articles/article_editor/modify?email=${encodeURIComponent(email)}&articleId=${encodeURIComponent(articleId)}&lastCategoryId=${encodeURIComponent(lastCategoryId)}`,{
+    const response = await fetch(`/api/articles/article_modify?email=${encodeURIComponent(email)}&articleId=${encodeURIComponent(articleId)}&lastCategoryId=${encodeURIComponent(lastCategoryId)}`,{
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -71,7 +108,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     if (!articleId) {
         alert("文章ID不能为空");
-        window.location.href = `hashboard.html?email=${encodeURIComponent(email)}`;
+        window.location.href = `dashboard.html?email=${encodeURIComponent(email)}`;
         return;
     }
     const select = document.getElementById('categorySelect');
@@ -84,7 +121,7 @@ window.addEventListener('DOMContentLoaded', async () => {
         items.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.id;       // 对应DTO的categoryId
-            option.textContent = ' '.repeat(level) + cat.name; // 对应DTO的categoryName
+            option.textContent = ''.repeat(level) + cat.name; // 对应DTO的categoryName
             // 处理子分类
             if (cat.children?.length) {
                 fragment.appendChild(option);
@@ -108,7 +145,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     const article = await response2.json();
     if (article) {
         document.querySelector('input[id="title"]').value = article.data.title;
-        document.querySelector('.editor-content').innerHTML = article.data.content;
+//        document.querySelector('#editor-container').innerHTML = article.data.content;
+        initEditor(article.data.content);
+        console.log('读取数据', article.data.content);
+
         document.querySelector(`input[name="visibility"][value="${article.data.visibility}"]`).checked = true;
 
         // 设置分类选择

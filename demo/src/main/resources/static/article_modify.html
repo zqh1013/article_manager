@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>文章创建</title>
+  <link href="https://unpkg.com/@wangeditor/editor@latest/dist/css/style.css" rel="stylesheet">
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -128,6 +129,12 @@
       align-items: center;
       gap: 8px;
     }
+
+    /* 编辑器容器样式 */
+    #editor-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -175,17 +182,10 @@
       </div>
     </div>
 
-    <!-- 编辑器 -->
+    <!-- 富文本编辑器 -->
     <div class="form-group">
       <label>内容编辑</label>
-      <div class="editor-toolbar">
-        <button type="button">B</button>
-        <button type="button">I</button>
-        <button type="button">标题</button>
-        <button type="button">@</button>
-      </div>
-      <div class="editor-content" contenteditable="true"
-           data-placeholder="在这里开始尽情写作吧..."></div>
+      <div id="editor-container"></div>
     </div>
 
     <!-- 共享设置 -->
@@ -205,6 +205,9 @@
   </form>
 </div>
 
-<script src="js/article_modify.js.js"></script>
+
+<!-- 引入wangEditor JS -->
+<script src="https://cdn.jsdelivr.net/npm/@wangeditor/editor@latest/dist/index.js"></script>
+<script src="js/article_modify.js"></script>
 </body>
 </html>

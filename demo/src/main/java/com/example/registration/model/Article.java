@@ -42,7 +42,7 @@ public class Article {
     private List<@Size(max=15, message = "标签最长15字符") String> tags = new ArrayList<>();
 
     @Lob
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @Column(name = "user_id", nullable = false)
