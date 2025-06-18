@@ -77,7 +77,7 @@
 
       if (response.ok) {
         // localStorage.setItem('userEmail', document.querySelector('input[name="email"]').value.trim());
-        window.location.href = `dashboard.html?email=${formData.email}`
+        window.location.href = `dashboard.html?email=${formData.email}&isAdmin=${data.isAdmin}`
         // window.location.href = 'dashboard.html?email=${formData.email}}';
       } else {
         alert(data.message)

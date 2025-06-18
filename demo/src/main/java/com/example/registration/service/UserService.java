@@ -18,7 +18,7 @@ public class UserService{
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        return new UserInfoRequest(user.getNickname(), user.getEmail());
+        return new UserInfoRequest(user.getNickname(), user.getEmail(),user.isAdmin());
     }
 
     public void changePassword(String email, ChangePasswordRequest Request){

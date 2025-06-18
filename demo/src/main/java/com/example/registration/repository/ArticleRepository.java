@@ -8,6 +8,7 @@ import com.example.registration.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.List;
@@ -27,7 +28,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             a.tags,
             a.visibility,
             a.createTime,
-            c.name
+            c.name,
+            a.reviewStatus
         )
         FROM Article a
         LEFT JOIN Category c ON a.categoryId = c.id AND a.userId = c.userId
@@ -56,7 +58,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
     @Query("SELECT NEW com.example.registration.dto.ArticleWithShareDTO(" +
             "a.id, a.title, a.tags, a.visibility, a.createTime, u.nickname) " +
             "FROM Article a JOIN User u ON a.userId = u.id " +
-            "WHERE a.visibility = 'public'")
+            "WHERE a.visibility = 'public' AND a.reviewStatus = 'APPROVED'")
     Page<ArticleWithShareDTO> findPublicArticles(Pageable pageable);
 
 
@@ -71,7 +73,8 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             a.category_id AS categoryId,
             a.visibility AS visibility,
             a.create_time AS createTime,
-            c.name AS categoryName
+            c.name AS categoryName,
+            a.review_status AS reviewStatus
         FROM articles a
         LEFT JOIN categories c ON a.category_id = c.id AND a.user_id = c.user_id
         WHERE a.user_id = :userId
@@ -88,6 +91,7 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
             @Param("userId") Long userId,
             @Param("text") String text,
             Pageable pageable);
+
 //    @Query(value = """
 //    SELECT
 //        a.id,
@@ -120,4 +124,22 @@ List<Article> findByUserIdAndMonth(
         @Param("userId") Long userId,
         @Param("startDate") LocalDateTime startDate,
         @Param("endDate") LocalDateTime endDate);
+
+
+    // 更新所有待审核文章的审核状态
+    @Modifying
+    @Query("UPDATE Article a SET a.reviewStatus = :status WHERE a.reviewStatus = 'PENDING'")
+    int updateAllPendingArticlesStatus(@Param("status") Article.ReviewStatus status);
+
+    // 分页查询公开文章 + 按审核状态过滤
+    @Query("SELECT a FROM Article a WHERE a.visibility = 'public' AND a.reviewStatus = :status")
+    Page<Article> findPublicByReviewStatus(
+            @Param("status") Article.ReviewStatus status,
+            Pageable pageable
+    );
+
+    // 全量查询（非分页）
+    @Query("SELECT a FROM Article a WHERE a.visibility = 'public' AND a.reviewStatus = :status")
+    List<Article> findAllPublicByReviewStatus(@Param("status") Article.ReviewStatus status);
+
 }
