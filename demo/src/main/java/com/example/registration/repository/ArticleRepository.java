@@ -112,4 +112,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long> {
 //            @Param("userId") Long userId,
 //            @Param("text") String text,
 //            Pageable pageable);
+@Query("SELECT a FROM Article a " +
+        "WHERE a.userId = :userId " +
+        "AND a.createTime BETWEEN :startDate AND :endDate " +
+        "ORDER BY a.createTime DESC")
+List<Article> findByUserIdAndMonth(
+        @Param("userId") Long userId,
+        @Param("startDate") LocalDateTime startDate,
+        @Param("endDate") LocalDateTime endDate);
 }
