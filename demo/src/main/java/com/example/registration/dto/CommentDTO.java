@@ -14,4 +14,5 @@ public class CommentDTO {
     private String date;
     private String email;
     private String articleTitle;
+    private Long articleId;
 }

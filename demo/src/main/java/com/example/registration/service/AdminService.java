@@ -122,7 +122,7 @@ public class AdminService {
                 .map(Article::getTitle)
                 .orElse("未知文章");
         dto.setArticleTitle(articleTitle);
-
+        dto.setArticleId(comment.getArticleId());
         return dto;
     }
 }
