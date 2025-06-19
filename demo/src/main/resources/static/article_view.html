@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -40,6 +41,13 @@
                     <i class="fas fa-book-open text-2xl mr-2"></i>
                     <span class="text-xl font-semibold text-gray-800">文章管理器</span>
                 </a>
+            </div>
+            <div class="flex items-center">
+                <!-- 添加导出按钮 -->
+                <button id="exportBtn" class="mr-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm export-btn">
+                    <i class="fas fa-download mr-1"></i>导出文章
+                </button>
+
             </div>
             <div class="flex items-center">
                 <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
@@ -419,6 +427,8 @@
             renderComments(comments);
             //生成推荐文章
             await loadRecommendations(articleId);
+            //文章导出
+            document.getElementById('exportBtn').addEventListener('click', exportArticle);
 
             // 隐藏加载指示器
             document.getElementById('loadingIndicator').classList.add('hidden');
@@ -437,7 +447,117 @@
     });
 
     function returnHtml(){
-        window.location.href = `${last_pos}?email=${currentUserEmail}`;
+        window.location.href = `${last_pos}&email=${currentUserEmail}`;
+    }
+
+    // 导出文章函数
+    function exportArticle() {
+        const title = document.getElementById('articleTitleDisplay').textContent;
+        const author = document.getElementById('articleAuthor').textContent;
+        const date = document.getElementById('articleDate').textContent;
+        const content = document.getElementById('articleBodyDisplay').innerHTML;
+
+        // 创建完整的HTML文档
+        const fullHtml = `
+            <!DOCTYPE html>
+            <html lang="zh-CN">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>${title}</title>
+                <style>
+                    body {
+                        font-family: 'Inter', 'Noto Sans SC', sans-serif;
+                        max-width: 800px;
+                        margin: 0 auto;
+                        padding: 20px;
+                        line-height: 1.6;
+                        color: #333;
+                    }
+                    .article-header {
+                        border-bottom: 1px solid #eee;
+                        padding-bottom: 20px;
+                        margin-bottom: 30px;
+                    }
+                    .article-title {
+                        font-size: 2rem;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
+                    .article-meta {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 15px;
+                        color: #666;
+                        font-size: 0.9rem;
+                    }
+                    .article-meta span {
+                        display: flex;
+                        align-items: center;
+                    }
+                    .article-meta i {
+                        margin-right: 5px;
+                    }
+                    .article-content {
+                        line-height: 1.8;
+                    }
+                    .article-content img {
+                        max-width: 100%;
+                        height: auto;
+                        border-radius: 8px;
+                        margin: 15px 0;
+                    }
+                    .article-content h1, .article-content h2, .article-content h3 {
+                        font-weight: 600;
+                        margin-top: 1.8rem;
+                        margin-bottom: 1rem;
+                    }
+                    .article-content h1 { font-size: 1.8rem; }
+                    .article-content h2 { font-size: 1.5rem; }
+                    .article-content h3 { font-size: 1.3rem; }
+                    .article-content p {
+                        margin-bottom: 1.2rem;
+                    }
+                    .footer {
+                        margin-top: 40px;
+                        text-align: center;
+                        color: #666;
+                        font-size: 0.9rem;
+                        border-top: 1px solid #eee;
+                        padding-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="article-header">
+                    <h1 class="article-title">${title}</h1>
+                    <div class="article-meta">
+                        <span><i class="fas fa-user"></i> ${author}</span>
+                        <span><i class="fas fa-calendar-alt"></i> ${date}</span>
+                    </div>
+                </div>
+
+                <div class="article-content">
+                    ${content}
+                </div>
+
+                <div class="footer">
+                    导出自: 文章管理器 - ${new Date().toLocaleDateString()}
+                </div>
+            </body>
+            </html>
+        `;
+
+        // 创建Blob对象
+        const blob = new Blob([fullHtml], { type: 'text/html' });
+
+        // 创建下载链接
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
 
     generateBtn.addEventListener('click', generateSummary);

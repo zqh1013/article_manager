@@ -22,7 +22,7 @@ public class ArticleWithSearchDTO {
             String visibility,
             Timestamp createTime,
             String categoryName,
-            Article.ReviewStatus reviewStatus
+            String reviewStatus
     ) {
         this.id = id;
         this.title = title;
@@ -30,7 +30,7 @@ public class ArticleWithSearchDTO {
         this.visibility = visibility;
         this.createTime = createTime.toLocalDateTime();
         this.categoryName = categoryName;
-        this.reviewStatus = reviewStatus.name();
+        this.reviewStatus = reviewStatus;
     }
 
     // Getter 方法
