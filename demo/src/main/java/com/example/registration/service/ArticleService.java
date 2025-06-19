@@ -98,6 +98,7 @@ public class ArticleService {
         return pages;
     }
 
+
     public Article getArticle(Long articleId){
         Article article = articleRepository.findById(articleId)
                 .orElseThrow(() -> new EntityNotFoundException(
