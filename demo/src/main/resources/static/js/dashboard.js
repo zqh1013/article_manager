@@ -528,7 +528,7 @@ async function modifyCategory(newCategory) {
 async function deleteCategory(id) {
     if (!confirm('确定删除此分类及其所有子分类吗？')) return;
     await fetch(`/api/categories/${id}?email=${encodeURIComponent(email)}`,
-                { method: 'DELETE' });
+        { method: 'DELETE' });
     await loadCategories();
 }
 
