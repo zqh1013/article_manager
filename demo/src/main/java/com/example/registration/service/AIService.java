@@ -1,31 +1,51 @@
 package com.example.registration.service;
 
+import com.example.registration.exception.exception.ResourceNotFoundException;
 import com.example.registration.model.Article;
+import com.example.registration.model.ArticleRecommendation;
 import com.example.registration.repository.ArticleRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class AIService {
     private final ArticleRepository articleRepository;
     private final RestTemplate restTemplate = new RestTemplate();
+    // 推荐结果缓存 - 过期时间60分钟
+    private final LoadingCache<String, List<ArticleRecommendation>> recommendationsCache =
+            CacheBuilder.newBuilder()
+                    .expireAfterWrite(60, TimeUnit.MINUTES)
+                    .build(new CacheLoader<String, List<ArticleRecommendation>>() {
+                        @Override
+                        public List<ArticleRecommendation> load(String key) {
+                            String[] parts = key.split(":");
+                            Long articleId = Long.parseLong(parts[0]);
+                            double threshold = Double.parseDouble(parts[1]);
+                            int limit = Integer.parseInt(parts[2]);
+                            return calculateRecommendations(articleId, threshold, limit);
+                        }
+                    });
 
     @Value("${baidu.api.authorization}")
     private String aiAuthorization;
 
     @Value("${baidu.api.endpoint}")
     private String aiEndpoint;
+
+    @Value("${baidu.api.simnet_endpoint}")
+    private String simnetEndpoint;
 
     public AIService(ArticleRepository articleRepository) {
         this.articleRepository = articleRepository;
@@ -131,4 +151,88 @@ public class AIService {
         }
         return Collections.singletonMap("error", "AI总结生成失败");
     }
+
+    public List<ArticleRecommendation> getRecommendations(Long articleId,
+                                                          double similarityThreshold,
+                                                          int limit) {
+        String cacheKey = String.format("%d:%f:%d", articleId, similarityThreshold, limit);
+        return recommendationsCache.getUnchecked(cacheKey);
+    }
+
+
+    private List<ArticleRecommendation> calculateRecommendations(Long articleId,
+                                                                 double similarityThreshold,
+                                                                 int limit) {
+        // 1. 获取当前文章
+        Article currentArticle = articleRepository.findByIdAndVisibility(articleId, "public")
+                .orElseThrow(() -> new ResourceNotFoundException("文章不存在或不可用"));
+
+        // 2. 获取所有其他公开文章
+        List<Article> otherArticles = articleRepository.findByVisibilityAndIdNot(articleId);
+
+        // 3. 并行计算相似度
+        Map<Long, Double> similarityScores = new ConcurrentHashMap<>();
+
+        otherArticles.parallelStream().forEach(article -> {
+            double similarity = calculateTextSimilarity(
+                    currentArticle.getTitle(),
+                    article.getTitle()
+            );
+            // 只存储大于阈值的相似度
+            if (similarity >= similarityThreshold) {
+                similarityScores.put(article.getId(), similarity);
+            }
+        });
+
+        // 4. 排序并筛选顶部推荐
+        return similarityScores.entrySet().stream()
+                .sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
+                .limit(limit)
+                .map(entry -> {
+                    Article article = articleRepository.findById(entry.getKey())
+                            .orElseThrow();
+                    return new ArticleRecommendation(
+                            article.getId(),
+                            article.getTitle(),
+                            entry.getValue()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
+    public double calculateTextSimilarity(String text1, String text2) {
+        try {
+
+            // 准备AI请求负载
+            Map<String, Object> aiPayload = new HashMap<>();
+            aiPayload.put("text_1", text1);
+            aiPayload.put("text_2", text2);
+            aiPayload.put("model", "ernie-3.5");
+
+            // 设置请求头
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", aiAuthorization);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(aiPayload, headers);
+            Map<String, Object> apiResponse = restTemplate.postForObject(
+                    simnetEndpoint, entity, Map.class
+            );
+
+            // 处理响应
+            if (apiResponse != null && apiResponse.containsKey("score")){
+                Object score = apiResponse.get("score");
+                if (score instanceof Number) {
+                    return ((Number) score).doubleValue();
+                } else if (score instanceof String) {
+                    return Double.parseDouble((String) score);
+                }
+            }
+        } catch (Exception e) {
+            // 日志记录错误
+        }
+        return 0.0; // 默认值
+    }
+
+
 }

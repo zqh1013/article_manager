@@ -142,4 +142,10 @@ List<Article> findByUserIdAndMonth(
     @Query("SELECT a FROM Article a WHERE a.visibility = 'public' AND a.reviewStatus = :status")
     List<Article> findAllPublicByReviewStatus(@Param("status") Article.ReviewStatus status);
 
+    Optional<Article> findByIdAndVisibility(Long id, String visibility);
+    @Query("SELECT a FROM Article a WHERE a.visibility = 'public' AND a.id != :excludeId")
+    List<Article> findByVisibilityAndIdNot(
+            @Param("excludeId") Long excludeId
+    );
+
 }

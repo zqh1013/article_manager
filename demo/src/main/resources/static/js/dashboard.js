@@ -734,7 +734,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("请先登录");
         window.location.href = 'login.html';
     }else {
-        alert(email);
         document.querySelectorAll('.profile-link').forEach(link => {
             // 创建新的URL对象
             const url = new URL(link.href);

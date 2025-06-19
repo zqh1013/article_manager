@@ -42,13 +42,6 @@
                 </a>
             </div>
             <div class="flex items-center">
-                <!-- 添加导出按钮 -->
-                <button id="exportBtn" class="mr-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm export-btn">
-                    <i class="fas fa-download mr-1"></i>导出文章
-                </button>
-
-            </div>
-            <div class="flex items-center">
                 <img class="h-8 w-8 rounded-full" src="https://randomuser.me/api/portraits/women/44.jpg" alt="用户头像">
             </div>
         </div>
@@ -111,11 +104,10 @@
     <section id="recommendSection" class="bg-white rounded-lg shadow-xl p-6 md:p-8">
         <h2 class="text-2xl font-semibold text-gray-800 mb-6">相关文章推荐 </h2>
         <!-- 文章列表 -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="articleListContainer">
-            <!-- 动态加载的文章卡片将显示在这里 -->
-            <div id="loadingIndicator2" class="col-span-3 flex justify-center py-12">
-                <p class="ml-4 text-gray-600"></p>
-            </div>
+        <div id="recommendations-list"></div>
+        <div id="recommendations-loading" class="loading-indicator">
+            <div class="spinner"></div>
+            <span>正在加载推荐...</span>
         </div>
     </section>
 </main>
@@ -132,7 +124,6 @@
     let last_pos = null;
     let currentUserEmail = null;
     let articleId = null;
-
 
     const generateBtn = document.getElementById('generate-btn');
 
@@ -167,15 +158,10 @@
     }
 
 
-
-    let isAdmin = false;
-
     function getArticleIdAndUserIdFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
         email = urlParams.get('email') || null;
         last_pos = urlParams.get('last') || null;
-        const isAdminParam = urlParams.get('isAdmin');
-        isAdmin = isAdminParam === 'true';
         currentUserEmail = email;
         articleId = urlParams.get('articleId') || null;
         return;
@@ -241,15 +227,6 @@
             categoryDisplay.className = `px-2 py-0.5 rounded-full text-xs font-medium `;
         }
 
-        /*
-        // 更新AI摘要
-        if (articleData.aiSummary) {
-            document.getElementById('aiSummarySection').classList.remove('hidden');
-            document.getElementById('aiSummaryText').textContent = articleData.aiSummary;
-        }
-
-         */
-
         // 更新文章内容
         document.getElementById('articleBodyDisplay').innerHTML = articleData.content ||
             `<p class="text-gray-500 italic">本文暂无内容</p>`;
@@ -259,10 +236,11 @@
     function renderComments(comments) {
         const commentsList = document.getElementById('commentsList');
         commentsList.innerHTML = '';
+
         comments.forEach(comment => {
-            isCurrentUserComment = currentUserEmail && comment.email === currentUserEmail;
-            canDelete = isCurrentUserComment || isAdmin;
-            commentElement = document.createElement('div');
+            const isCurrentUserComment = currentUserEmail && comment.email === currentUserEmail;
+
+            const commentElement = document.createElement('div');
             commentElement.className = 'flex items-start space-x-3 comment-item';
             commentElement.dataset.commentId = comment.id; // 存储评论ID
             commentElement.dataset.commentEmail = comment.email; // 直接存储邮箱
@@ -278,10 +256,10 @@
                     <p class="text-sm text-gray-700 leading-relaxed">${escapeHTML(comment.content)}</p>
                 </div>
                 <div class="mt-1 text-xs text-gray-500">
-                    ${canDelete ?
-                        `<button onclick="handleDeleteComment(${comment.id})" class="hover:text-red-600 font-medium">删除</button>` :
-                        `<span class="text-xs text-gray-500">无</span>`
-                    }
+                    ${isCurrentUserComment ?
+                `<button onclick="handleDeleteComment(${comment.id})" class="hover:text-red-600 font-medium">删除</button>` :
+                `<span class="permission-error">仅评论作者可删除</span>`
+            }
                 </div>
             </div>
         `;
@@ -373,10 +351,59 @@
             }[match];
         });
     }
+    async function loadRecommendations(articleId) {
+        // 显示加载指示器
+        document.getElementById('recommendations-list').innerHTML = '';
+        document.getElementById('recommendations-loading').classList.remove('hidden');
+
+        try {
+            const response = await fetch(`/api/ai/recommendations?articleId=${articleId}`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                renderRecommendations(data.recommendations);
+            }
+        } catch (error) {
+            console.error('获取推荐失败:', error);
+        } finally {
+            document.getElementById('recommendations-loading').classList.add('hidden');
+        }
+    }
+
+    function renderRecommendations(recommendations) {
+        const container = document.getElementById('recommendations-list');
+
+        if (recommendations.length === 0) {
+            container.innerHTML = '<div class="no-recommendations">暂无相关推荐</div>';
+            return;
+        }
+
+        recommendations.forEach(rec => {
+            const articleCard = document.createElement('div');
+            articleCard.className = 'article-card';
+
+            articleCard.innerHTML = `
+          <div class="article-content">
+            <div class="article-header">
+              <div class="article-title">${rec.title}</div>
+              <div class="share-btn">
+                <i class="fas fa-share-alt"></i>
+              </div>
+            </div>
+           </div>
+          `;
+            articleCard.addEventListener('click', () => {
+                window.location.href = `article_view.html?email=${email}&articleId=${rec.articleId}&last=dashboard.html`;
+            });
+
+            container.appendChild(articleCard);
+        });
+
+    }
 
     // 页面加载完成后执行
     document.addEventListener('DOMContentLoaded', async () => {
-        await getArticleIdAndUserIdFromURL();
+        getArticleIdAndUserIdFromURL();
         if (!articleId) {
             renderArticle(null);
             return;
@@ -390,9 +417,8 @@
             response = await fetchComments(articleId);
             comments =  response.data;
             renderComments(comments);
-
-            //文章导出
-            document.getElementById('exportBtn').addEventListener('click', exportArticle);
+            //生成推荐文章
+            await loadRecommendations(articleId);
 
             // 隐藏加载指示器
             document.getElementById('loadingIndicator').classList.add('hidden');
@@ -411,117 +437,7 @@
     });
 
     function returnHtml(){
-        window.location.href = `${last_pos}&email=${email}`;
-    }
-
-    // 导出文章函数
-    function exportArticle() {
-        const title = document.getElementById('articleTitleDisplay').textContent;
-        const author = document.getElementById('articleAuthor').textContent;
-        const date = document.getElementById('articleDate').textContent;
-        const content = document.getElementById('articleBodyDisplay').innerHTML;
-
-        // 创建完整的HTML文档
-        const fullHtml = `
-            <!DOCTYPE html>
-            <html lang="zh-CN">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>${title}</title>
-                <style>
-                    body {
-                        font-family: 'Inter', 'Noto Sans SC', sans-serif;
-                        max-width: 800px;
-                        margin: 0 auto;
-                        padding: 20px;
-                        line-height: 1.6;
-                        color: #333;
-                    }
-                    .article-header {
-                        border-bottom: 1px solid #eee;
-                        padding-bottom: 20px;
-                        margin-bottom: 30px;
-                    }
-                    .article-title {
-                        font-size: 2rem;
-                        font-weight: bold;
-                        margin-bottom: 10px;
-                    }
-                    .article-meta {
-                        display: flex;
-                        flex-wrap: wrap;
-                        gap: 15px;
-                        color: #666;
-                        font-size: 0.9rem;
-                    }
-                    .article-meta span {
-                        display: flex;
-                        align-items: center;
-                    }
-                    .article-meta i {
-                        margin-right: 5px;
-                    }
-                    .article-content {
-                        line-height: 1.8;
-                    }
-                    .article-content img {
-                        max-width: 100%;
-                        height: auto;
-                        border-radius: 8px;
-                        margin: 15px 0;
-                    }
-                    .article-content h1, .article-content h2, .article-content h3 {
-                        font-weight: 600;
-                        margin-top: 1.8rem;
-                        margin-bottom: 1rem;
-                    }
-                    .article-content h1 { font-size: 1.8rem; }
-                    .article-content h2 { font-size: 1.5rem; }
-                    .article-content h3 { font-size: 1.3rem; }
-                    .article-content p {
-                        margin-bottom: 1.2rem;
-                    }
-                    .footer {
-                        margin-top: 40px;
-                        text-align: center;
-                        color: #666;
-                        font-size: 0.9rem;
-                        border-top: 1px solid #eee;
-                        padding-top: 20px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="article-header">
-                    <h1 class="article-title">${title}</h1>
-                    <div class="article-meta">
-                        <span><i class="fas fa-user"></i> ${author}</span>
-                        <span><i class="fas fa-calendar-alt"></i> ${date}</span>
-                    </div>
-                </div>
-
-                <div class="article-content">
-                    ${content}
-                </div>
-
-                <div class="footer">
-                    导出自: 文章管理器 - ${new Date().toLocaleDateString()}
-                </div>
-            </body>
-            </html>
-        `;
-
-        // 创建Blob对象
-        const blob = new Blob([fullHtml], { type: 'text/html' });
-
-        // 创建下载链接
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `${title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}.html`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        window.location.href = `${last_pos}?email=${currentUserEmail}`;
     }
 
     generateBtn.addEventListener('click', generateSummary);
